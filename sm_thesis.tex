@@ -1,0 +1,428 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% IMPERIAL COLLEGE LONDON DISSERTATION TEMPLATE 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This file is `icldiss.tex'
+%
+% This document fulfills the layout requirements for Dissertations
+% of the University of London and of Imperial College London.
+% To do so it uses the documentclass `icldt' which is provided free 
+% of charge under the MIT license. The relevant College regulations,
+% and the license are included in the `icldt' manual.
+%
+% If you print your dissertation for yourself or as a present for
+% family, friends or colleagues you probably should use a different
+% layout which does not fulfill the College requirements but which
+% can look much better.
+%
+% For further information and for professional layouting and
+% printing services please visit www.PrettyPrinting.net
+%
+% Copyright (c) 2008, Daniel Wagner, www.PrettyPrinting.net
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass{icldt}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+% ======================================
+
+\usepackage[T1]{fontenc}
+%\usepackage[dvipdfm,pdfborder=false]{hyperref}
+%\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{fixltx2e} % subscripts e.g. CO2
+\usepackage{multirow,amssymb,amsmath,booktabs,mathtools,longtable}
+\usepackage{soul}
+\usepackage{lscape}
+%\usepackage[subrefformat=parens,labelformat=parens]{subfig}
+\usepackage{caption}
+%\usepackage[subrefformat=parens,labelformat=parens]{subcaption}
+\usepackage[labelformat=simple]{subcaption}
+
+\def\leftalgn{0.45}\def\rightalgn{0.45}
+\def\algnrow{\rule{\leftalgn\textwidth}{0ex}&\rule{\rightalgn\textwidth}{0ex}}
+% CONSTRAINTS:
+% equation label must fit in {1 -\leftalgn -\rightalgn}\textwidth
+% \leftalgn must be larger than any text to left of align character
+% \rightalgn must be larger than any text to right of align character
+\newenvironment{algneqn}{%
+  \arraycolsep=0ex\renewcommand\arraystretch{0}%
+  \begin{equation}%
+  \begin{array}{rl}%
+  \algnrow\\}%
+ {\\\algnrow%
+  \end{array}%
+  \end{equation}\ignorespacesafterend%
+}
+\def\snug#1{\vspace*{-#1\baselineskip}}
+
+% ======================================
+
+\title{Title}
+\author{Simon Moulds}
+\date{Month Year}
+% Please specify you department here.
+\department{Civil and Environmental Engineering}
+% The college regulations do not require that you mention 
+% your supervisor on the titlepage of you dissertation.
+% If you want to do so put her name here.
+\supervisor{}
+% The college regulations do neither require nor forbid 
+% a dedication of your dissertation to somebody or something. 
+% If you want to include a dedication put the text here. 
+\dedication{}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+%% \textbf{Write your own abstract here instead of the following 224 words of
+%% and about placeholder text.}
+
+``In publishing and graphic design, lorem ipsum (or simply lipsum) is standard
+placeholder text used to demonstrate the graphic elements of a document or
+visual presentation, such as font, typography, and layout. Lipsum also serves as
+placeholder text in mock-ups of visual design projects before the actual words
+are inserted into the finished product. When used in this manner, lipsum is also
+called greeking.
+
+Even though using `lorem ipsum' often arouses curiosity due to its resemblance
+to classical Latin, it is not intended to have meaning. Where text is visible in
+a document, people tend to focus on the textual content rather than upon overall
+presentation, so publishers use lorem ipsum when displaying a typeface or design
+in order to direct the focus to presentation. `Lorem ipsum' also approximates a
+typical distribution of letters in English, which helps to shift the focus to
+presentation.
+
+The most common lorem ipsum text reads as follows: Lorem ipsum dolor sit amet,
+consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+deserunt mollit anim id est laborum.''
+
+\hfill --- Wikipedia
+\end{abstract}
+
+\makededication
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+
+
+
+\chapter{Introduction}
+
+Over recent decades the green revolution in India has driven substantial environmental change. While the revolution means that India is now self sufficient in food grains \citep{Singh2000}, there has been widespread land cover change and a marked increase in the exploitation of water resources for irrigation \citep{Roy2007}. \citet{Scott2009} observe that irrigation from groundwater extraction represents more than half of the total irrigated area in India, while a survey carried out by \citet{Shah2006} estimates that in north west India, which contains a large proportion of the fertile Gangetic plains, more than 90\% of the cultivated land is irrigated, of which about 90\% is supplied from groundwater. In addition to agricultural use, groundwater resources supply a large proportion of domestic and industrial water demand \citep{Amarasinghe2005}. Regional water demand has caused a gradual depletion of groundwater resources in several locations \citep{Rodell2009}. The pressure on water resources in India, already severe, is likely to increase with forecasted population growth together with continued economic progress. Further, \citet{Goswami2006} showed that, while climate change has not affected mean rainfall, the frequency of heavy rain days has increased while the frequency of light and moderate rain days has decreased. This is consistent with the hypothesis that climate change will cause precipitation in the tropics to become more extreme \citep{Trenberth2003}. \\
+
+Water resources in northern India are dominated by large scale aquifers \citep{Bandy1995}. Variations in recharge due to land cover change and changing irrigation practices, combined with increasing intensification of groundwater extractions, may affect water resources in complex ways. In addition, there is evidence of strong feedbacks between soil moisture and precipitation in the region \citep[e.g.][]{Meehl1994,Koster2004,Niyogi2010}. This arises because soil moisture at the land surface affects the partitioning of latent and sensible heat and surface albedo \citet{Eltahir1998}. Modelling carried out by \citet{Meehl1994} identified the link between soil moisture and the strength of the Asian summer monsoon. The Global Land-Atmosphere Coupling Experiment (GLACE) \citep{Koster2004,Koster2006,Guo2006} provided further evidence of soil moisture-precipitation coupling and identified northern India as one of three global "hot spots" where the soil moisture feedback is especially pronounced due to the sensitivity of evapotranspiration to soil moisture, rather than the available solar radiation, combined with the high variability of evapotranspiration over time. \\
+
+A review by \citet{Seneviratne2010} highlighted that, while multimodel experiments such as GLACE succeed in identifying basic feedback mechanisms, there is wide range of sensitivity of climate to soil moisture between different climate models. \citet{Pitman2009} observed that different assumptions about the physical characteristics of land cover types made by climate models, in terms of the representation of albedo, evapotranspiration and crop phenology, causes model results to differ markedly. Consequently, the impact of land cover change on water resources and fluxes in northern India is highly uncertain. One major source of uncertainty emanates from the lack of a common land cover change dataset to force climate models \citep{Pitman2009}. Additional uncertainty arises by the different land surface parameterisations implemented by different climate models, which is made worse by the fact that these models cannot be calibrated to local conditions. \citet{Seneviratne2010} suggests that this problem could be overcome by using the output of offline, high resolution, physically based land surface models, calibrated using local observed data, to force global climate models. Finally, there is a lack of observations of key hydrological variables to calibrate and verify models. \\
+
+%% \subsection{Aim}
+
+%% The aim of the project is to develop a robust methodology to assess the impact of land cover change on water resources and hydrometeorological feedbacks in northern India. \\ 
+
+
+
+
+\chapter{Literature review}
+
+\section{Surface energy and water balances}
+
+\subsection{Surface energy balance}
+
+Fundamentally, the global climate system is driven by solar radiation, which almost all exists in the shortwave range \citep{Barry2010}. Incoming radiation may be absorbed, reflected or transmitted by the atmosphere \citep{Pitman2003,Seneviratne2010,Barry2010}. The energy that reaches that Earth's surface may be absorbed or reflected depending on the surface albedo. The net radiation at the Earth's surface, $ R_{n} $, can be expressed as:
+
+\begin{algneqn} \label{eq:netradiation}
+R_{n}\ &= S \downarrow (1 - \alpha) + L \downarrow - L \uparrow
+\end{algneqn}
+
+\noindent where $ S \downarrow $ is incoming shortwave radiation, $ \alpha $ is surface albedo, and $ L \downarrow $ and $ L \uparrow $ are incoming and outgoing longwave radiation respectively. Net radiation is transferred to the atmosphere primarily through sensible and latent heat fluxes \citep{Pitman2003}. Sensible heat is the energy transferred from the Earth's surface to the atmosphere by convection and conduction, while latent heat is the energy absorbed or released by the atmosphere when water changes state. To evaporate water, an amount of energy called the latent heat of vapourisation, which varies with temperature, is released by the atmosphere. When water condenses an amount of latent heat corresponding to the latent heat of vapourisation is transferred to the atmosphere \citep{Barry2010}. The partition between sensible and latent heat fluxes is defined as the Bowen ratio, $ B $, which can be written:
+
+\begin{algneqn}
+B\ &= \dfrac{\lambda E}{H}
+\end{algneqn}
+
+\noindent where $ \lambda E $ is latent heat flux and $ H $ is sensible heat flux. In addition to sensible and latent heat fluxes net radiation drives the flux of heat to the soil and, where biomass is present, chemical energy which is stored in plants during photosynthesis and subsequently released during respiration \citep{Barry2010}. Collectively these terms gives rise to the surface energy budget equation for a surface soil layer, which can be written as:
+
+\begin{algneqn} \label{eq:energybudget}
+\dfrac{dH}{dt}\ &= R_{n} - H - \lambda E - G - F
+\end{algneqn} 
+
+\noindent where $ dH / dt $ is the total energy flux within the soil layer, $ G $ is soil heat flux and $ F $ is chemical energy storage. As the soil thickness decreases $ dH / dt $ approaches zero and $ G $ represents the heat flux at the land surface \citep{Seneviratne2010}. \\
+
+\subsection{Moist static energy}
+
+The total energy in the planetary boundary layer is called moist static energy and comprises sensible and latent heat, supplied from the surface fluxes of energy and moisture, respectively, and potential energy \citep{Eltahir1998,Prive2007a}. It can be writen as:
+
+\begin{algneqn} \label{eq:mse}
+MSE\ &= C_{p}T + L_{v}q + gZ
+\end{algneqn}
+
+\noindent where $ C_{p} $ is the specific heat capacity at constant pressure, $ T $ is air temperature in Kelvin, $ L_{v} $ is the latent heat of vapourisation, $ q $ is specific humidity, $ g $ is gravitational force and $ Z $ is elevation. The existence of a significant vertical gradient of moist static energy in the planetary boundary layer, such that moist static energy decreases with elevation, drives moist convection which results in local convective storms \citep{Eltahir1998,Neelin2007,Barry2010}. Similarly, a horizontal gradient of moist static energy strengthens large scale thermal circulation from areas of high moist static energy to an areas of low moist static energy \citep{Eltahir1998,Zheng1998}. Together, these two effects play an important role in the formation of the Asian monsoon. \\
+
+\subsection{Surface water balance}
+
+Precipitation reaching the Earth's surface may be intercepted by vegetation or it may fall directly to the soil surface. Intercepted water either evaporates directly from the canopy or falls to the soil surface, where it may enter the soil as infiltration or contribute to surface runoff. Water entering the soil may be evaporated from the surface, drain through the soil to recharge the underlying aquifer or drawn up by plant roots and transpired from the canopy \citep{Pitman2003}. Thus, for the same soil layer considered previously, the surface water budget equation may be written:
+
+\begin{algneqn} \label{eq:waterbudget}
+\dfrac{dS}{dt}\ &= P - E - Q_{s} - Q_{d}
+\end{algneqn}
+
+\noindent where $ dS/dt $ is the change in storage within the soil layer $ P $ is precipitation, $ E $ is evaporation, $ Q_{s} $ is surface runoff and $ Q_{d} $ is subsurface drainage. It should be noted that Equations \ref{eq:energybudget} and \ref{eq:waterbudget} are linked through the evaporation term. \\
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Soil moisture feedbacks}
+
+Soil moisture is defined as the water stored in the unsaturated zone of a soil layer \citep{Hillel1998}. Volumetric soil moisture, $ \theta $, defines the volume of water, $ V_{w} $, compared to the total volume, $ V_{t} $, of the soil layer. It can be expressed as: 
+
+\begin{algneqn} \label{eq:volumetric_sm}
+\theta\ &= \dfrac{V_{w}}{V_{t}}
+\end{algneqn}
+
+\noindent where $ V_{t} $ is comprised of the volume of solids, $ V_{s} $, volume of air, $ V_{a} $ and volume of water. The soil porosity, $ \phi $, is the theoretical maximum value of volumetric soil moisture \citep{Shaw1994}. However, in practice, the maximum soil moisture content that can be utilised by plants is the difference between the field capacity, $ \theta_{fc} $, defined as the maximum amount of water that can be held by the soil matrix against the force of gravity, and the permanent wilting point, $ \theta_{wilt} $, defined as the point at which plant roots cannot draw any water from the soil matrix \citep{Shaw1994}. \\
+   
+Equations \ref{eq:energybudget} and \ref{eq:waterbudget} show that the surface energy and water balances are linked through the evapotranspiration term. A useful concept when considering the relationship between soil moisture and evapotranspiration is the evaporative fraction, $ EF $, expressed as:
+
+\begin{algneqn} \label{eq:evaporativefraction}
+EF\ &= \dfrac{\lambda E}{R_{n}}
+\end{algneqn}
+
+\noindent As shown in Figure \ref{fig:evapfraction}, the evaporative fraction increases with soil moisture until it reaches its maximum value, $ EF_{max} $, corresponding to a critical soil moisture value, $ \theta_{crit} $, which lies between the permanent wilting point, $ \theta_{wilt} $, and field capacity, $ \theta_{fc} $ \citep{Seneviratne2010}. For soil moisture values above $ \theta_{crit} $ evapotranspiration is energy limited, while for values less than $ \theta_{crit} $ evapotranspiration is soil moisture limited. When soil moisture falls below $ \theta_{wp} $ evapotranspiration cannot take place. This gives rise to a transitional zone, $ \theta_{wilt} \leq \theta \leq \theta_{crit} $, where soil moisture directly constrains evapotranspiration and, therefore, provides feedbacks to the atmosphere through its impact on the partition between sensible and latent heat \citep{Pitman2003,Seneviratne2010}. \\
+
+\begin{figure}[h]
+    \centering
+    \includegraphics{figs//evapfraction}
+    \caption[Conceptual diagram of different evapotranspiration regimes]{Conceptual diagram showing soil moisture and energy limited evapotranspiration regimes \citep{Seneviratne2010}}.
+    \label{fig:evapfraction}
+\end{figure}
+
+In addition to its effect on the Bowen ratio, soil moisture lowers the surface albedo which increases the fraction of solar radiation absorbed by the Earth's surface. In transitional regimes these two effects may influence near surface air temperature and precipitation patterns \citep{Seneviratne2010}, illustrated by Figure \ref{fig:feedbacks}. When the latent heat flux at the Earth's surface is limited by soil moisture more energy is available for sensible heating, causing the air temperature to rise \citep{Seneviratne2010}. This has been observed in several locations including North and South America \citep[e.g.][]{Clark2005}, India \citep[e.g.][]{Roy2007} and Europe \citep[e.g.][]{Seneviratne2006}. The relationship between soil moisture and rainfall, which will be the focus of this study, is more complex. Early studies investigated whether the proportion of rainfall supplied by regional evapotranspiration increased with soil moisture \citep[e.g.][]{Eltahir1996,Trenberth1999}. However, recent work has established that the main impact of soil moisture on precipitation relates to its effect on the stability of the planetary boundary layer \citep[e.g.][]{Eltahir1998,Findell2003a,Findell2003b,Alfieri2008,Lo2013}. Conceptually, more evapotranspiration from the Earth's surface increases moist static energy in the planetary boundary layer, resulting in convective instability which, in turn, leads to increased precipitation by driving local moist convection \citep{Eltahir1998}. This explanation is mainly supported by modelling studies \citep[e.g.][]{Zheng1998,Koster2004,Lo2013}, but some observational evidence exists for the Sahel region in Africa \citep{Taylor2006,Taylor2007}. However, alternative modelling experiements have indicated that under certain conditions dry soils cause greater convective instability than wet soils \citep[e.g.][]{Findell2003,Findell2003b}, highlighting the complexity of the feedback mechanism. The nature of the feedback mechanism between soil moisture and precipitation in northern India will be discussed in greater detail in the following sections. \\
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[h]{.5\textwidth}
+    \centering
+    \includegraphics{figs//sm_temp_feedback}
+    \subcaption{Soil moisture-temperature}
+    \label{fig:sm_temp_feedback}
+\end{subfigure}%
+\begin{subfigure}[h]{.5\textwidth}
+    \centering
+    \includegraphics{figs//sm_precip_feedback}
+    \subcaption{Soil moisture-precipitation}
+    \label{fig:sm_precip_feedback}
+\end{subfigure}
+\caption[Soil moisture-atmosphere feedback mechanisms]{Soil moisture-atmosphere feedback mechanisms \citep{Seneviratne2010}}
+\label{fig:feedbacks}
+\end{figure}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Role of vegetation in soil moisture feedbacks}
+
+The biosphere is the main interface between soil moisture and the atmosphere \citep{Lawrence2007a,Dirmeyer2006a}. Consequently, land cover and its temporal dynamics have important effects on the interaction between the two domains \citep{Sellers1997,Pielke2002,Feddema2005}. These may be caused by biogeochemical processes, which alter the chemical composition of the atmosphere by affecting the land surface carbon flux, or biogeophysical processes, which alter the surface energy and water balances by changing the surface albedo and Bowen ratio \citep{Feddema2005}. Surface albedo determines the total energy available at land surface \citep{Meehl1994,Pitman2003}. Forests tend to have an albedo between 0.09 and 0.18, while for cereal crops the value typically lies between 0.18 and 0.25 \citep{Barry2010}. Plant physiology affects the Bowen ratio by influencing the rate of transpiration \citep{Hillel1998}. Canopy structure provides a further control on Bowen ratio through its effect on interception and bare soil evaporation, as well as influencing surface roughness, which affects the transfer of momentum from the surface to the atmosphere \citep{Bounoua2002,Arneth2012}. Irrigation, a secondary effect of land cover change, affects the surface water balance and, therefore, alters the Bowen ratio \citep{Boucher2004}. It may also affect the surface albedo both directly, by increasing the amount of water land surface, and indirectly, by altering the physical characterisitics and seasonal dynamics of crops \citep{Seneviratne2010}. \\
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Assessing the impact of the land surface on the Asian monsoon}
+
+Early modelling experiments by \citet{Meehl1994} used six atmospheric general circulation models (AGCMs) to investigate the impact of the land surface of continental India on the mean strength of the Asian monsoon. The models consistently associated strong monsoons with positive soil moisture anomolies and higher land surface temperatures, confiming the results of previous global and regional sensitivity studies investigating the impact of soil moisture \citep{Walker1977,Shukla1982,Sud1985} and surface albedo \citep{Charney1977,Sud1985} on precipitation. Limitations of these early modelling experiments include the coarse spatial resolution and the simplistic representation of the land surface used by the AGCMs. First generation land surface models, such as those used by \citet{Meehl1994}, use a simplistic conceptual bucket model to represent soil moisture that cannot adequately represent the complexity of the soil system. Furthermore, since these models do not include a physically based representation of plants, the biophysical control on surface albedo, momentum transfer and evapotranspiration is neglected \citep{Sellers1997}. Nevertheless, based on the modelling results \citet{Meehl1994} hypothesised that strong rainfall in the early stage of the monsoon could initiate a positive soil moisture feedback loop that would sustain rainfall throughout the middle and late stages even when the large scale temperature gradient between the land and the ocean, the fundamental mechanism driving the formation of the monsoon \citep{Turner2012}, decreased. \\
+
+Several studies of GLACE \citep{Koster2004,Koster2006,Guo2006}, based on an ensemble of twelve atmospheric general circulation models, identified northern India, the Sahel region in Africa and central North America as global "hot spots" of soil moisture-precipitation coupling strength during the boreal summer. In the experiment, each participating AGCM performed three ensembles of 16 simulations of the boreal summer under different conditions to isolate the effect of soil moisture on rainfall within the model. The coupling strength was determined through a diagnostic measure based on the variance of precipitation between simulations \citep{Koster2002}. Results from GLACE show that models with a strong link between soil moisture and the surface energy budget, and between the surface energy budget and precipitation, had more explanatory power than models with weak representations of either of these two components, supporting the hypothesis that interactions between the land and atmosphere are significant. Local moist convection, which is initiated by variations in moist static energy in the planetary boundary layer, was identified as an important process relating soil moisture to rainfall, whereas large scale condensation controlled by variations in the global circulation is less important \citep{Guo2006}. \\
+
+The GLACE experiment demonstrates that while multimodel projects can identify certain basic processes where there is broad model agreement, comparing individual models shows a wide range of sensitivity of climate to soil moisture \citep{Seneviratne2010}. \citet{Guo2006} considered the feedback mechanism in terms of the effect of soil moisture on evapotranspiration and the effect of evapotranspiration on precipitation. This division showed that while some variability could be explained by the range of model sensitivity of convection to evapotranspiration, the most important factor is the different land surface parameterisation schemes within the models, particularly in the way that the relative contribution of tranpiration, bare soil evaporation and canopy interception loss is determined in soil moisture limited evapotranspiration regimes. The Project for Intercomparison of Land surface Parameterisation Schemes (PILPS) \citep[e.g.][]{Henderson1995,Henderson1996} demonstrated that different land surface models forced with the same climatological variables and with identical values of land surface parameters produced markedly different results in terms of the surface energy and water balance \citep{Chen1997}. Results from the Land-Use and Climate, IDentification of robust impacts (LUCID) experiment \citep{Henderson1995,Guo2006,Pitman2009}, which used seven climate models to isolate the effects of land cover change on regional and global precipitation patterns, show that land surface models follow different assumptions about the physical characteristics of land cover and land use types, causing model outputs to differ markedly. \\
+
+\citet{Dirmeyer2006a} draw attention to the difficulty in relating the results of ensemble model comparisons to physical quantities from observed datasets. This is made more difficult by the lack of global observed datasets of model outputs such as soil moisture and evapotranspiration \citep{Betts1996,Dirmeyer2006a,Seneviratne2010}. Moreover, establishing the direction of causality from observed datasets of soil moisture and precipitation is difficult because the impact of precipitation on soil moisture is likely to dominate the relationship between the two variables \citep{Seneviratne2010}. \citet{Wei2008} point out that in some cases soil moisture feedbacks could equally be explained by the internal variability of precipitation, through processes such as the Madden-Julian oscillation \citep{Madden1971,Madden1972}, which is known to be important in the Asian monsoon circulation \citep{Webster1987a,Zhang2005}. Alternatively, an additional variable, such as sea surface temperature, may falsely suggest the existence of strong feedbacks between soil moisture and precipitation by affecting both these variables \citep{Notaro2006,Orlowsky2010}. Several studies investigating soil moisture-precipitation feedbacks over the midwest United States, identified as a global hot spot by GLACE, have failed to provide empirical evidence that soil moisture affects precipitation patterns in this region \citep[e.g.][]{Findell1997,Salvucci2002,Alfieri2008}, highlighting the level of model uncertainty regarding soil moisture-precipitation feedbacks. \\
+
+The lack of agreement between models is particularly problematic for northern India where there is large uncertainty about the direction, magnitude and spatial pattern of future changes to monsoon rainfall \citep{Goswami2006,Turner2009}. \citet{Pitman2009} identified the lack of a common land cover change dataset to force the models as a major contributor to model uncertainty about the impact of historic land cover change on precipitation. In many regions this is exacerbated by the limited availability of remotely sensed observations at sufficient temporal extent and resolution to detect land cover change \citep{Goward2006}. Uncertainty also arises from the different land surface parameterisation schemes implemented by global climate models \citep{Pitman2009}. This problem is made worse by the fact that these models cannot be calibrated to local conditions as land surface state variables evolve in response to model output. This is relevant to northern India where processes such as irrigation, which are not represented in global climate models, are known to be important \citep{Boucher2004,Gordon2005}. To overcome this problem global climate models can be forced with the output of offline, high resolution, physically based hydrological models driven by observed meteorological data and calibrated againsts local observed hydrological data \citep{Seneviratne2010}. Given the scarcity of observed data available for northern India, it is necessary to develop methods that utilise remote sensing data for this purpose. \\
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Mapping land cover}
+
+Land cover affects the surface energy and water balances by changing the surface albedo and the partition between sensible and latent heat \citep{Sellers1997,Feddema2005}. This means that an accurate description of land cover at the Earth's surface is required to model land-atmospere interactions \citep{Friedl2002}. Additionally, over the last century population growth and technological development has driven rapid and widespread environmental change as human dependence on goods and services from the Earth's ecosystems has increased \citep{Vitousek1997}. Land cover change may be a significant driver of observed changes in regional climate in northern India \citep[e.g.][]{Goswami2006,Pitman2009,Niyogi2010}. However, a land cover change dataset for northern India, documenting the effects of the green revolution in a spatially explicit way, does not exist. In this section the various global land cover products are reviewed, followed by a description of a land use change model, the Change in Land Use and Effects at small regional extent (CLUE-s) \citep{Verburg2002,Verburg2004}, which can be used to extrapolate available land cover products in time. \\
+
+\subsection{Global land cover products}
+
+Early global and regional land cover maps \citep{Olson1983,Matthews1983,Wilson1985} were based on field surveys and ancillary information from different sources. While these efforts provided useful information on global land cover distribution, the maps had low spatial resolution and only provided estimates of potential vegetation based on local climate \citep{Friedl2002}. It is now widely acknowledged that adequate parameterisation of the land surface can only be achieved by assimilating remotely sensed data \citep{Sellers1997,Friedl2002}. Land cover maps based on remote sensing are commonly produced using unsupervised or supervised classification algorithms to divide multispectral satellite images into classes with statistically similar spectral properties \citep{Nemani1997}. Unsupervised classification methods seperate the image into a specified number of classes based on the image statistics. These abstract classes are then assigned to land cover types based on ground truth data. Supervised classification methods divide the image into meaningful classes based on image statistics derived from user identified training samples \citep{Neteler2008}. \\
+
+Several global land cover products have been derived from remotely sensed data \citep{Herold2008}. \citet{Defries1994} produced a map with eleven land cover classes from multitemporal normalised difference vegetation index (NDVI) data at one degree resolution derived from NASA's Advanced Very High Resolution Radiometer (AVHRR) instrument. Land cover types were separated using a supervised classification procedure based on the phenology of different plants reflected in the NDVI data. \citet{Defries1998} extended this method to incorporate  information from all AVHRR spectral bands. \citet{Loveland2000} developed the DISCover product for International Geosphere-Biosphere Project, Data and Information Systems (IGBP-DIS), a map with a spatial resolution of one kilometre produced using unsupervised classification of monthly composited NDVI AVHRR data. Using the same AVHRR dataset, \citet{Hansen2000} created the the University of Maryland (UMD) global land cover product using a supervised classification procedure based on empirical metrics derived from multitemporal AVHRR data. Although AVHRR data has been widely used for global land cover mapping the design of the instrument is not optimised for this purpose \citep{Friedl2002}. It is widely recognised that AVHRR data is sensitive to the effects of clouds, humidity and aerosols \citep[e.g.][]{Nemani1997,Loveland2000,Friedl2002}. Further, \citet{Friedl2000} argues that the poor spectral resolution of the AVHRR instrument makes it unsuitable for land cover mapping applications. Finally, AVHRR data contains a substantial amount of noise because the viewing angle of the instrument varies significantly \citep{Cihlar1994,Friedl2002}. \\
+
+The MODIS instrument, launched on board the NASA Terra satellite in 1999 and Aqua satellite in 2002, was designed to address many of the shortcomings of the AVHRR instrument to provide an improved dataset for remote sensing applitcations \citep{Friedl2002}. The MODIS global land cover product (MOD12) \citep{Friedl2002}, consisting of a 500m spatial resolution land cover map for each year since 2001, is produced using a supervised classification procedure that exploits the information content of seven spectral bands \citep{Friedl2002}. An advantage of the MODIS product over alternative products is that is provides a time series dataset which allows land cover changet to be monitored. However, \citet{Friedl2010} state that inconsistencies in the MODIS dataset, arising from the fact that global land cover is highly dynamic, mean that the change between years indicated by MOD12 is well above observed change. \citet{Thenkabail2005}, as part of the Global Irrigated Area Mapping (GIAM) project of the International Water Management Institute (IMWI) \citep[e.g.][]{Thenkabail2009a}, developed a land cover map of the Indus Ganges basins for 2001 and 2002 at 500m spatial resolution by performing a supervised classification of multitemporal MODIS images with seven spectral bands. This product provides detailed information about the crop calender and irrigation practices in the Indus-Ganges basin. Regional and global land cover maps produced for one point in time, or with low temporal resolution such as the MODIS land cover product, have limited use for land surface modelling applications because they cannot provide information on land cover dynamics on an intraseasonal basis. \\
+
+Regional and global land cover mapping projects using supervised and unsupervised methods, such as those outlined above, require extensive ground truth data to extract meaningful classes from satellite imagery and to formally assess the accuracy of the land cover product \citep{Nemani1997,Loveland2000,Cihlar2000}. Collecting sufficient data for these tasks is time consuming and expensive \citep{Thenkabail2005}. Furthermore, given that land cover is highly dynamic \citep{Foody2002}, it is difficult to ensure the validity of ground truth data after a certain period of time \citep{Friedl2002}. For these reasons it is common to use high resolution satellite imagery and aerial photography as ground truth data \citep[e.g.][]{Defries1998,Loveland2000,Gong2013}, increasing the level of subjectivity required to assign land cover classes to ground truth sites. Performing the classification is again time consuming and highly subjective as the process cannot currently be automated \citep{Loveland2000}. Underlying these issues is the problem of data availability, which is poor for many regions. For many applications, therefore, unsupervised and supervised methods based on statistical classification algorithms are not suitable. \\
+
+Adopting a simple approach, \citet{Running1995} developed a classification logic based on threshold values to distinguish six vegetation classes using multitemporal NDVI data to describe the vegetation canopy. \citet{Lambin1995} showed that class separability improved when classification was performed on the ratio between land surface temperature (LST), which can be detected with remote sensing, and NDVI compared to either dataset taken independently. \citet{Lambin1996} explained in biophysical terms the significance of the LST-NDVI ratio, concluding that whilst the NDVI is an indicator of the vegetation canopy only, LST contains more information about the physical characteristics of the land surface, such as surface roughness and albedo. \citet{Nemani1997} incorporated multitemporal LST, Red and NIR to extend the classification logic put forward by \citet{Running1995} to identify eight vegetation classes. As this method is based on the physical properties of the land surface it is objective and, depending on the quality of the satellite imagery, consistent. It is straightforward to automate the procedure which increases the reproducibility of the method and reduces the time and resources required to produce a land cover product. The main limitation of the method is the limited number of land cover classes it yields. However, implementing such a method may give a first order estimate of the temporal dynamics of the main land cover types across a region. \\
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Land use change modelling}
+
+A time series dataset of land cover maps for northern India is essential to assess the impact of land use change on regional water resources and climate. However, given the limitations of supervised and unsupervised classification methods, discussed previously, and the poor quality and availability of satellite images before the launch of NASA's Terra and Aqua satellites, the dataset should be produced using alternative methods. Land use change models are widely used to gain insight into the drivers of land use change and make projections of future land cover change under different scenarios \citep{Veldkamp2001}. Such modelling efforts are frequently used to support land use planning and environmental management \citep{Verburg2002}. However, they may also be used to extrapolate land cover back in time in order to increase the temporal extent of existing land use and land cover maps \citep{Verburg2002}. This method is particularly suited to regions where non spatial census data on the relative area of different land use and land cover types can be used to constrain the model. \\ 
+
+The Change in Land Use and its Effects (CLUE) modelling framework \citep{Veldkamp1996} was originally designed to work at a coarse resolution on the national scale. The model works by relating observed land cover to spatially explicit biophysical and socioeconomic driving factors through a statistical model. Biophysical drivers include the suitability of land for different land use types in terms of climate, soil type and elevation, amongst others. Socioeconomic drivers include factors such as population, economic and technological development and political structure. The CLUE-s model \citep{Verburg2004,Verburg2002} extended the CLUE model for regional scales. The key difference between the two models is the spatial resolutions at which they operate \citep{Verburg2002}. Whereas applications of the CLUE model \citep[e.g.][]{Veldkamp1996,Verburg1999} typically relied on census data for model inputs, restricting the spatial resolution to the size of the smallest administrative unit for which data was available, the CLUE-s model is designed to utilise remotely sensed datasets with a finer spatial resolution. \\
+
+The CLUE-s model is divided into a non spatial demand module, which specifies the total area of each land cover type at each time step, and a spatially explicit allocation module which allocates land cover change spatially according to the driving factors \citep{Verburg2002}. The basis of the allocation module is a logit model which defines for each grid cell the probability that it is filled with a certain land cover type given a set of driving factors. The logit model can be expressed as:
+
+\begin{equation} \label{eq:logit}
+Log\left(\frac{p_{i}}{1-p_{i}}\right) = \beta_{0} + \beta_{1} X_{1,i} + \beta_{2} X_{2,i} + ... + \beta_{n} X_{n,i}
+\end{equation} 
+
+\noindent where $ p_{i} $ is the probability that grid cell $ i $ contains the considered land cover type and $ X_{1,i} $, $ X_{2,i} $, ..., $ X_{n,i} $ are driving factors. The value of the regression coefficients, $ \beta_{0} $, $ \beta_{1} $, $ \beta_{2} $, $ ... $, $ \beta_{n} $, are determined by fitting the model to observed land use in a stepwise procedure whereby factors that have insignificant explanatory power are excluded from the final model equation. The goodness of fit to the observed data is assesed using the receiver operator characteristic \citep{Pontius2001} which compares the predicted probabiities against the observed land cover for different threshold values covering the full range of predicted probabilities. The CLUE-s methodology is shown by Figure \ref{fig:allocation}. \\
+
+\setlength{\floatsep}{1pt}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{figs//clues_allocation}
+\caption[CLUE-s allocation procedure]{Diagram showing CLUE-s allocation procedure \citep{Verburg2002}}
+\label{fig:allocation}
+\end{figure}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\section{Summary}
+
+The green revolution in India has driven substantial environmental change. The revolution has enabled India to become self sufficient in food grains \citep{Singh2000}, however, it has also caused widespread land cover change and a marked increase in the exploitation of water resources \citep{Shah2006,Roy2007,Scott2009}. The pressure on water resources in India is likely to increase with forecasted population growth and continued economic progress. Moreover, climate change may increase the erratic behaviour of the Asian summer monsoon, presenting a significant risk to regional water supply \citep{Goswami2006}. \\
+
+Land cover change and changing irrigation practices may affect the water resources and fluxes in northern India in complex ways. Further, there is evidence of feedbacks between soil moisture and precipitation. Soil moisture, which is strongly influenced by land cover \citep{Dirmeyer2006,Lawrence2007a}, affects the partition of sensible and latent heat and the albedo at the Earth's surface \citep{Meehl1994,Pitman2003,Seneviratne2010}. Conceptually, this may influence precipitation by increasing the moist static energy in the planetary boundary layer, driving local moist convection \citep[e.g.][]{Eltahir1998}. However, the feedback mechanism is complex and some modelling studies have shown that convective instability is stronger over dry soils \citep{Findell2003a,Findell2003b}. Nevertheless, several studies of Global Land-Atmosphere Coupling Experiment (GLACE) \citep{Koster2004,Koster2006,Guo2006}, based on twelve atmospheric general circulation models, identified northern India as a "hot spot" of soil moisture-precipitation coupling strength during the boreal summer. However, while there is broad agreement between the global climate models about the basic feedback mechanism, comparing individual models shows a wide range of sensitivity of climate to soil moisture \citep{Koster2004,Guo2006,Pitman2009}. Consequently there is a lack of understanding about the impact of land cover change on regional water resources and climate. \\ 
+
+In northern India there is large uncertainty about future changes to the Asian summer monsoon \citep{Goswami2006,Turner2009}, which supplies approximately 70\% of regional rainfall \citep{Thenkabail2005}. There is a need, therefore, to improve the ability of models to simulate historical trends in order to reduce the uncertainty associated with future predictions. \citet{Pitman2009} identifies the lack of a common land cover change dataset to force the models as a major contributor to the uncertainty about the impact of historic land cover change on rainfall. While a number of global and regional land cover products are available \citep[e.g.][]{Hansen2000,Loveland2000,Friedl2002}, none provide information about land cover change in northern India over the study period. Land use change models can be used to extrapolate land cover back in time \citep{Verburg2002}. One such model, CLUE-s \citep{Verburg2002,Verburg2004}, simulates the spatial pattern of land cover change based on spatially explicit, static and dynamic driving factors and non-spatial estimates of land cover area. A further source of uncertainty arises from the different land surface schemes implemented by different climate models \citep{Henderson1996,Pitman2009}, which is exacerbated by the fact that these models cannot be calibrated to local conditions. To overcome this problem global climate models can be forced with the output of offline, high resolution, physically based hydrological models, calibrated against local observed data \citep{Seneviratne2010}. However, this has not been attempted for northern India. \\
+
+%% \subsection{Objectives}
+
+%% To achieve the stated aim the following objectives will be pursued:
+%% \begin{enumerate}
+%% \item To develop a robust methodology to construct a land use and land cover change dataset for regions where the temporal extent and resolution of remotely sensed data is poor
+%% \item To assimilate different types of remotely sensed data to improve the parameterisation and calibration of land surface models and to subsequently use land surface models to produce a reanalysis soil moisture dataset for the study region at very high spatial resolution
+%% \item To compare the performance of land surface models with different forcings to assess the impact of land cover change on water fluxes and resources in the study area
+%% \item To explore the use of land surface models to map water scarcity and vulnerability at very high spatial and temporal resolution
+%% \end{enumerate}
+
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% %
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% \subsection{Hypotheses}
+
+%% \begin{description}
+%% \item[Hypothesis 1:] Land use change models can be used extrapolate classified satellite images back in time in order to improve the temporal extent of land cover maps
+%% \item[Hypothesis 2:] Remotely sensed data can be used in data scarce regions to calibrate land surface models
+%% \item[Hypothesis 3:] The integration of a land cover change dataset improves the capacity of land surface models to simulate observed trends in water fluxes and resources in the study area
+%% \item[Hypothesis 4:] High resolution, physically based land surface models can be used to understand the processes driving observed hydrometeorological feedbacks in northern India
+%% \item[Hypothesis 5:] Landsurface models can be used to map water scarcity and vulnerability at very high spatial and temporal resolution
+%% \end{description}
+
+%% \newpage
+
+\begin{thebibliography}{123}
+\addcontentsline{toc}{chapter}{Bibliography}
+\raggedright
+
+\bibitem{bibtex} It is more convinient and faster to use \texttt{bibtex} instead 
+of writing your bibliography manually.
+
+\bibitem{jabref}
+You can even use a tool like \texttt{jabref} to manage and maintain your 
+database of references.
+
+\end{thebibliography}
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% If you print your dissertation for yourself or as a present for
+% family, friends or colleagues you probably should use a different
+% layout which does not fulfill the College requirements but which
+% can look much better.
+%
+% For further information and for professional layouting and
+% printing services please visit www.PrettyPrinting.net
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% IMPERIAL COLLEGE LONDON DISSERTATION TEMPLATE 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This file is `icldiss.tex'
+%
+% This document fulfills the layout requirements for Dissertations
+% of the University of London and of Imperial College London.
+% To do so it uses the documentclass `icldt' which is provided free 
+% of charge under the MIT license. The relevant College regulations,
+% and the license are included in the `icldt' manual.
+%
+% If you print your dissertation for yourself or as a present for
+% family, friends or colleagues you probably should use a different
+% layout which does not fulfill the College requirements but which
+% can look much better.
+%
+% For further information and for professional layouting and
+% printing services please visit www.PrettyPrinting.net
+%
+% Copyright (c) 2008, Daniel Wagner, www.PrettyPrinting.net
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass{icldt}
+
+% ======================================
+
+\usepackage[T1]{fontenc}
+%\usepackage[dvipdfm,pdfborder=false]{hyperref}
+%\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{fixltx2e} % subscripts e.g. CO2
+\usepackage{multirow,amssymb,amsmath,booktabs,mathtools,longtable}
+\usepackage{soul}
+\usepackage{lscape}
+%\usepackage[subrefformat=parens,labelformat=parens]{subfig}
+\usepackage{caption}
+%\usepackage[subrefformat=parens,labelformat=parens]{subcaption}
+\usepackage[labelformat=simple]{subcaption}
+
+\def\leftalgn{0.45}\def\rightalgn{0.45}
+\def\algnrow{\rule{\leftalgn\textwidth}{0ex}&\rule{\rightalgn\textwidth}{0ex}}
+% CONSTRAINTS:
+% equation label must fit in {1 -\leftalgn -\rightalgn}\textwidth
+% \leftalgn must be larger than any text to left of align character
+% \rightalgn must be larger than any text to right of align character
+\newenvironment{algneqn}{%
+  \arraycolsep=0ex\renewcommand\arraystretch{0}%
+  \begin{equation}%
+  \begin{array}{rl}%
+  \algnrow\\}%
+ {\\\algnrow%
+  \end{array}%
+  \end{equation}\ignorespacesafterend%
+}
+\def\snug#1{\vspace*{-#1\baselineskip}}
+
+% ======================================
+
+\title{Title}
+\author{Simon Moulds}
+\date{Month Year}
+% Please specify you department here.
+\department{Civil and Environmental Engineering}
+% The college regulations do not require that you mention 
+% your supervisor on the titlepage of you dissertation.
+% If you want to do so put her name here.
+\supervisor{}
+% The college regulations do neither require nor forbid 
+% a dedication of your dissertation to somebody or something. 
+% If you want to include a dedication put the text here. 
+\dedication{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+%% \textbf{Write your own abstract here instead of the following 224 words of
+%% and about placeholder text.}
+
+``In publishing and graphic design, lorem ipsum (or simply lipsum) is standard
+placeholder text used to demonstrate the graphic elements of a document or
+visual presentation, such as font, typography, and layout. Lipsum also serves as
+placeholder text in mock-ups of visual design projects before the actual words
+are inserted into the finished product. When used in this manner, lipsum is also
+called greeking.
+
+Even though using `lorem ipsum' often arouses curiosity due to its resemblance
+to classical Latin, it is not intended to have meaning. Where text is visible in
+a document, people tend to focus on the textual content rather than upon overall
+presentation, so publishers use lorem ipsum when displaying a typeface or design
+in order to direct the focus to presentation. `Lorem ipsum' also approximates a
+typical distribution of letters in English, which helps to shift the focus to
+presentation.
+
+The most common lorem ipsum text reads as follows: Lorem ipsum dolor sit amet,
+consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+deserunt mollit anim id est laborum.''
+
+\hfill --- Wikipedia
+\end{abstract}
+
+\makededication
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+<<chap1, child='sm_thesis_intro.Rnw'>>=
+@ 
+
+<<chap2, child='sm_thesis_litreview.Rnw'>>=
+@ 
+
+\begin{thebibliography}{123}
+\addcontentsline{toc}{chapter}{Bibliography}
+\raggedright
+
+\bibitem{bibtex} It is more convinient and faster to use \texttt{bibtex} instead 
+of writing your bibliography manually.
+
+\bibitem{jabref}
+You can even use a tool like \texttt{jabref} to manage and maintain your 
+database of references.
+
+\end{thebibliography}
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% If you print your dissertation for yourself or as a present for
+% family, friends or colleagues you probably should use a different
+% layout which does not fulfill the College requirements but which
+% can look much better.
+%
+% For further information and for professional layouting and
+% printing services please visit www.PrettyPrinting.net
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

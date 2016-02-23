@@ -1,0 +1,5 @@
+figs/
+not-used/
+examples/
+*.pdf
+!icldt.pdf
