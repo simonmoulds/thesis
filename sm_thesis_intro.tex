@@ -1,0 +1,154 @@
+
+
+
+\documentclass{icldt}
+\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\newcommand{\SweaveOpts}[1]{}  % do not interfere with LaTeX
+\newcommand{\SweaveInput}[1]{} % because they are not real TeX commands
+\newcommand{\Sexpr}[1]{}       % will only be parsed by R
+
+
+
+% ======================================
+
+\usepackage[T1]{fontenc}
+%\usepackage[dvipdfm,pdfborder=false]{hyperref}
+%\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{fixltx2e} % subscripts e.g. CO2
+\usepackage{multirow,amssymb,amsmath,booktabs,mathtools,longtable}
+\usepackage{soul}
+\usepackage{lscape}
+%\usepackage[subrefformat=parens,labelformat=parens]{subfig}
+\usepackage{caption}
+%\usepackage[subrefformat=parens,labelformat=parens]{subcaption}
+\usepackage[labelformat=simple]{subcaption}
+
+\def\leftalgn{0.45}\def\rightalgn{0.45}
+\def\algnrow{\rule{\leftalgn\textwidth}{0ex}&\rule{\rightalgn\textwidth}{0ex}}
+% CONSTRAINTS:
+% equation label must fit in {1 -\leftalgn -\rightalgn}\textwidth
+% \leftalgn must be larger than any text to left of align character
+% \rightalgn must be larger than any text to right of align character
+\newenvironment{algneqn}{%
+  \arraycolsep=0ex\renewcommand\arraystretch{0}%
+  \begin{equation}%
+  \begin{array}{rl}%
+  \algnrow\\}%
+ {\\\algnrow%
+  \end{array}%
+  \end{equation}\ignorespacesafterend%
+}
+\def\snug#1{\vspace*{-#1\baselineskip}}
+
+% ======================================
+
+\title{Title}
+\author{Simon Moulds}
+\date{Month Year}
+% Please specify you department here.
+\department{Civil and Environmental Engineering}
+% The college regulations do not require that you mention 
+% your supervisor on the titlepage of you dissertation.
+% If you want to do so put her name here.
+\supervisor{}
+% The college regulations do neither require nor forbid 
+% a dedication of your dissertation to somebody or something. 
+% If you want to include a dedication put the text here. 
+\dedication{}
+
+
+
+\begin{document}
+
+
+\chapter{Introduction}
+
+Over recent decades the green revolution in India has driven substantial environmental change. While the revolution means that India is now self sufficient in food grains \citep{Singh2000}, there has been widespread land cover change and a marked increase in the exploitation of water resources for irrigation \citep{Roy2007}. \citet{Scott2009} observe that irrigation from groundwater extraction represents more than half of the total irrigated area in India, while a survey carried out by \citet{Shah2006} estimates that in north west India, which contains a large proportion of the fertile Gangetic plains, more than 90\% of the cultivated land is irrigated, of which about 90\% is supplied from groundwater. In addition to agricultural use, groundwater resources supply a large proportion of domestic and industrial water demand \citep{Amarasinghe2005}. Regional water demand has caused a gradual depletion of groundwater resources in several locations \citep{Rodell2009}. The pressure on water resources in India, already severe, is likely to increase with forecasted population growth together with continued economic progress. Further, \citet{Goswami2006} showed that, while climate change has not affected mean rainfall, the frequency of heavy rain days has increased while the frequency of light and moderate rain days has decreased. This is consistent with the hypothesis that climate change will cause precipitation in the tropics to become more extreme \citep{Trenberth2003}. \\
+
+Water resources in northern India are dominated by large scale aquifers \citep{Bandy1995}. Variations in recharge due to land cover change and changing irrigation practices, combined with increasing intensification of groundwater extractions, may affect water resources in complex ways. In addition, there is evidence of strong feedbacks between soil moisture and precipitation in the region \citep[e.g.][]{Meehl1994,Koster2004,Niyogi2010}. This arises because soil moisture at the land surface affects the partitioning of latent and sensible heat and surface albedo \citet{Eltahir1998}. Modelling carried out by \citet{Meehl1994} identified the link between soil moisture and the strength of the Asian summer monsoon. The Global Land-Atmosphere Coupling Experiment (GLACE) \citep{Koster2004,Koster2006,Guo2006} provided further evidence of soil moisture-precipitation coupling and identified northern India as one of three global "hot spots" where the soil moisture feedback is especially pronounced due to the sensitivity of evapotranspiration to soil moisture, rather than the available solar radiation, combined with the high variability of evapotranspiration over time. \\
+
+A review by \citet{Seneviratne2010} highlighted that, while multimodel experiments such as GLACE succeed in identifying basic feedback mechanisms, there is wide range of sensitivity of climate to soil moisture between different climate models. \citet{Pitman2009} observed that different assumptions about the physical characteristics of land cover types made by climate models, in terms of the representation of albedo, evapotranspiration and crop phenology, causes model results to differ markedly. Consequently, the impact of land cover change on water resources and fluxes in northern India is highly uncertain. One major source of uncertainty emanates from the lack of a common land cover change dataset to force climate models \citep{Pitman2009}. Additional uncertainty arises by the different land surface parameterisations implemented by different climate models, which is made worse by the fact that these models cannot be calibrated to local conditions. \citet{Seneviratne2010} suggests that this problem could be overcome by using the output of offline, high resolution, physically based land surface models, calibrated using local observed data, to force global climate models. Finally, there is a lack of observations of key hydrological variables to calibrate and verify models. \\
+
+%% \subsection{Aim}
+
+%% The aim of the project is to develop a robust methodology to assess the impact of land cover change on water resources and hydrometeorological feedbacks in northern India. \\ 
+
+%% \subsection{Objectives}
+
+%% To achieve the stated aim the following objectives will be pursued:
+%% \begin{enumerate}
+%% \item To develop a robust methodology to construct a land use and land cover change dataset for regions where the temporal extent and resolution of remotely sensed data is poor
+%% \item To assimilate different types of remotely sensed data to improve the parameterisation and calibration of land surface models and to subsequently use land surface models to produce a reanalysis soil moisture dataset for the study region at very high spatial resolution
+%% \item To compare the performance of land surface models with different forcings to assess the impact of land cover change on water fluxes and resources in the study area
+%% \item To explore the use of land surface models to map water scarcity and vulnerability at very high spatial and temporal resolution
+%% \end{enumerate}
+
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% %
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% \subsection{Hypotheses}
+
+%% \begin{description}
+%% \item[Hypothesis 1:] Land use change models can be used extrapolate classified satellite images back in time in order to improve the temporal extent of land cover maps
+%% \item[Hypothesis 2:] Remotely sensed data can be used in data scarce regions to calibrate land surface models
+%% \item[Hypothesis 3:] The integration of a land cover change dataset improves the capacity of land surface models to simulate observed trends in water fluxes and resources in the study area
+%% \item[Hypothesis 4:] High resolution, physically based land surface models can be used to understand the processes driving observed hydrometeorological feedbacks in northern India
+%% \item[Hypothesis 5:] Landsurface models can be used to map water scarcity and vulnerability at very high spatial and temporal resolution
+%% \end{description}
+
+%% \newpage
+\end{document}

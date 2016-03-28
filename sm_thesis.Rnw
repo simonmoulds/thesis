@@ -42,6 +42,20 @@
 \usepackage{caption}
 %\usepackage[subrefformat=parens,labelformat=parens]{subcaption}
 \usepackage[labelformat=simple]{subcaption}
+\usepackage{url}
+
+% from copernicus:
+%\usepackage[german, english]{babel}
+\usepackage{tabularx}
+\usepackage{cancel}
+%\usepackage{multirow}
+\usepackage{supertabular}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{rotating}
+\nonstopmode
 
 \def\leftalgn{0.45}\def\rightalgn{0.45}
 \def\algnrow{\rule{\leftalgn\textwidth}{0ex}&\rule{\rightalgn\textwidth}{0ex}}
@@ -119,21 +133,38 @@ deserunt mollit anim id est laborum.''
 <<chap1, child='sm_thesis_intro.Rnw'>>=
 @ 
 
-<<chap2, child='sm_thesis_litreview.Rnw'>>=
+<<chap2, child='sm_thesis_lulcc.Rnw'>>=
 @ 
 
-\begin{thebibliography}{123}
-\addcontentsline{toc}{chapter}{Bibliography}
-\raggedright
+<<chap3, child='sm_thesis_india_lulcc.Rnw'>>=
+@ 
 
-\bibitem{bibtex} It is more convinient and faster to use \texttt{bibtex} instead 
-of writing your bibliography manually.
+<<chap4, child='sm_thesis_indiam.Rnw'>>=
+@ 
 
-\bibitem{jabref}
-You can even use a tool like \texttt{jabref} to manage and maintain your 
-database of references.
+<<chap5, child='sm_thesis_monsoon.Rnw'>>=
+@ 
 
-\end{thebibliography}
+<<chap6, child='sm_thesis_rhydro.Rnw'>>=
+@ 
+
+<<chap7, child='sm_thesis_conclusion.Rnw'>>=
+@ 
+
+%% \begin{thebibliography}{123}
+%% \addcontentsline{toc}{chapter}{Bibliography}
+%% \raggedright
+
+\bibliographystyle{apalike}
+\bibliography{thesis_refs}
+%% \bibitem{bibtex} It is more convinient and faster to use \texttt{bibtex} instead 
+%% of writing your bibliography manually.
+
+%% \bibitem{jabref}
+%% You can even use a tool like \texttt{jabref} to manage and maintain your 
+%% database of references.
+
+%% \end{thebibliography}
 
 \end{document}
 

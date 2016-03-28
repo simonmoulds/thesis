@@ -1,0 +1,169 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: sm_thesis.aux
+Case mismatch error between cite keys Verburg2002 and verburg2002
+---line 199 of file sm_thesis.aux
+ : \citation{Verburg2002
+ :                      }
+I'm skipping whatever remains of this command
+Case mismatch error between cite keys Verburg2002 and verburg2002
+---line 412 of file sm_thesis.aux
+ : \citation{Verburg2002
+ :                      }
+I'm skipping whatever remains of this command
+Case mismatch error between cite keys Verburg2002 and verburg2002
+---line 413 of file sm_thesis.aux
+ : \citation{Verburg2002
+ :                      }
+I'm skipping whatever remains of this command
+The style file: apalike.bst
+Reallocated field_info (elt_size=4) to 10830 items from 5000.
+Database file #1: thesis_refs.bib
+Repeated entry---line 588 of file thesis_refs.bib
+ : @article{pebesma2005
+ :                     ,
+I'm skipping whatever remains of this entry
+Repeated entry---line 3961 of file thesis_refs.bib
+ : @book{chambers1998
+ :                   ,
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "Amarasinghe2005"
+Warning--I didn't find a database entry for "Goswami2006"
+Warning--I didn't find a database entry for "Trenberth2003"
+Warning--I didn't find a database entry for "Bandy1995"
+Warning--I didn't find a database entry for "Meehl1994"
+Warning--I didn't find a database entry for "Koster2004"
+Warning--I didn't find a database entry for "Eltahir1998"
+Warning--I didn't find a database entry for "R2014"
+Warning--I didn't find a database entry for "sing2005"
+Warning--I didn't find a database entry for "pontius2008"
+Warning--I didn't find a database entry for "Sellers1997"
+Warning--I didn't find a database entry for "Vitousek1997"
+Warning--I didn't find a database entry for "Olson1983"
+Warning--I didn't find a database entry for "Matthews1983"
+Warning--I didn't find a database entry for "Wilson1985"
+Warning--I didn't find a database entry for "Nemani1997"
+Warning--I didn't find a database entry for "Neteler2008"
+Warning--I didn't find a database entry for "Herold2008"
+Warning--I didn't find a database entry for "Defries1994"
+Warning--I didn't find a database entry for "Defries1998"
+Warning--I didn't find a database entry for "Hansen2000"
+Warning--I didn't find a database entry for "Friedl2000"
+Warning--I didn't find a database entry for "Cihlar1994"
+Warning--I didn't find a database entry for "Thenkabail2009a"
+Warning--I didn't find a database entry for "Cihlar2000"
+Warning--I didn't find a database entry for "Foody2002"
+Warning--I didn't find a database entry for "Gong2013"
+Warning--I didn't find a database entry for "Running1995"
+Warning--I didn't find a database entry for "Lambin1995"
+Warning--I didn't find a database entry for "Lambin1996"
+Warning--I didn't find a database entry for "Barry2010"
+Warning--I didn't find a database entry for "Pitman2003"
+Warning--I didn't find a database entry for "Prive2007a"
+Warning--I didn't find a database entry for "Neelin2007"
+Warning--I didn't find a database entry for "Zheng1998"
+Warning--I didn't find a database entry for "Hillel1998"
+Warning--I didn't find a database entry for "Shaw1994"
+Warning--I didn't find a database entry for "Clark2005"
+Warning--I didn't find a database entry for "Eltahir1996"
+Warning--I didn't find a database entry for "Trenberth1999"
+Warning--I didn't find a database entry for "Findell2003a"
+Warning--I didn't find a database entry for "Findell2003b"
+Warning--I didn't find a database entry for "Alfieri2008"
+Warning--I didn't find a database entry for "Taylor2006"
+Warning--I didn't find a database entry for "Taylor2007"
+Warning--I didn't find a database entry for "Findell2003"
+Warning--I didn't find a database entry for "Lawrence2007a"
+Warning--I didn't find a database entry for "Dirmeyer2006a"
+Warning--I didn't find a database entry for "Pielke2002"
+Warning--I didn't find a database entry for "Bounoua2002"
+Warning--I didn't find a database entry for "Arneth2012"
+Warning--I didn't find a database entry for "Boucher2004"
+Warning--I didn't find a database entry for "Walker1977"
+Warning--I didn't find a database entry for "Shukla1982"
+Warning--I didn't find a database entry for "Sud1985"
+Warning--I didn't find a database entry for "Charney1977"
+Warning--I didn't find a database entry for "Koster2002"
+Warning--I didn't find a database entry for "Henderson1995"
+Warning--I didn't find a database entry for "Henderson1996"
+Warning--I didn't find a database entry for "Chen1997"
+Warning--I didn't find a database entry for "Betts1996"
+Warning--I didn't find a database entry for "Wei2008"
+Warning--I didn't find a database entry for "Madden1971"
+Warning--I didn't find a database entry for "Madden1972"
+Warning--I didn't find a database entry for "Webster1987a"
+Warning--I didn't find a database entry for "Zhang2005"
+Warning--I didn't find a database entry for "Notaro2006"
+Warning--I didn't find a database entry for "Orlowsky2010"
+Warning--I didn't find a database entry for "Findell1997"
+Warning--I didn't find a database entry for "Salvucci2002"
+Warning--I didn't find a database entry for "Turner2009"
+Warning--I didn't find a database entry for "Goward2006"
+Warning--I didn't find a database entry for "Gordon2005"
+Warning--I didn't find a database entry for "Dirmeyer2006"
+Warning--I didn't find a database entry for "box1976"
+Warning--I didn't find a database entry for "bastin2012"
+Warning--I didn't find a database entry for "vitolo?"
+Warning--I didn't find a database entry for "wheater1993"
+Warning--I didn't find a database entry for "pechlivanidis2011"
+Warning--I didn't find a database entry for "montanari?"
+Warning--I didn't find a database entry for "sivakumar2009"
+Warning--I didn't find a database entry for "gupta2014"
+Warning--I didn't find a database entry for "sivapalan2009"
+Warning--I didn't find a database entry for "beven2000"
+Warning--I didn't find a database entry for "sivapalan2015"
+Warning--I didn't find a database entry for "sivapalan2012"
+Warning--I didn't find a database entry for "kelly2013"
+Warning--I didn't find a database entry for "dibaldassare2015-a"
+Warning--I didn't find a database entry for "loucks2015"
+Warning--I didn't find a database entry for "bulatewicz2012"
+Warning--I didn't find a database entry for "yue2014"
+Warning--I didn't find a database entry for "gregerson2007"
+Warning--I didn't find a database entry for "castranova2013"
+Warning--I didn't find a database entry for "betrie2011"
+Warning--I didn't find a database entry for "horsburgh2013"
+Warning--I didn't find a database entry for "burger2012"
+Warning--I didn't find a database entry for "lall2014"
+Warning--empty journal in schade2012
+You've used 168 entries,
+            1935 wiz_defined-function locations,
+            1489 strings with 43722 characters,
+and the built_in function-call counts, 85981 in all, are:
+= -- 8164
+> -- 4846
+< -- 70
++ -- 1825
+- -- 1746
+* -- 8213
+:= -- 14787
+add.period$ -- 506
+call.type$ -- 168
+change.case$ -- 1697
+chr.to.int$ -- 165
+cite$ -- 169
+duplicate$ -- 2554
+empty$ -- 5239
+format.name$ -- 1992
+if$ -- 16409
+int.to.chr$ -- 4
+int.to.str$ -- 0
+missing$ -- 166
+newline$ -- 841
+num.names$ -- 504
+pop$ -- 1386
+preamble$ -- 1
+purify$ -- 1705
+quote$ -- 0
+skip$ -- 2032
+stack$ -- 0
+substring$ -- 6643
+swap$ -- 375
+text.length$ -- 8
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 1000
+warning$ -- 1
+while$ -- 593
+width$ -- 0
+write$ -- 2172
+(There were 5 error messages)

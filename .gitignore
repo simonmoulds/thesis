@@ -1,5 +1,6 @@
 figs/
 not-used/
 examples/
+RODM.db
 *.pdf
 !icldt.pdf

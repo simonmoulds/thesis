@@ -1,5 +1,18 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Conceptual diagram of different evapotranspiration regimes}}{11}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Soil moisture-atmosphere feedback mechanisms}}{12}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces CLUE-s allocation procedure}}{21}
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Diagram showing the general methodology used for inductive land use change modelling applications, adapted from \citet {mas2014}. The input land use/land cover data can be a\nobreakspace {}single categorical map showing the pattern of land use/land cover at one time point (LULC (t1)) or a\nobreakspace {}series of maps showing historical land use/land cover transitions (LULCC (t1-t0)).\relax }}{35}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Class diagram in the Unified Modeling Language (UML) for \textbf {lulcc}, showing the main classes and methods included in the package.\relax }}{36}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Observed land use maps for the Plum Island Ecosystems site in 1985, 1991 and 1999, created by plotting the ObsLulcRasterStack object representing the data.\relax }}{38}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Suitability of pixels in the Plum Island Ecosystems study site to belong to Forest, Built and Other land use classes according to binary logistic regression models. Elevation and slope are used as explanatory variables for all land uses while Built additionally includes distance to built pixels in 1985.\relax }}{38}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces ROC curves showing the ability of each type of predictive model to simulate the observed pattern of land use in the Plum Island Ecosystems site in 1985 in the data partition left out of the fitting procedure.\relax }}{39}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces ROC curve showing the ability of the binary logistic regression model fitted on observed land use data from 1985 to predict the gain in Built land between 1985 and 1991.\relax }}{39}
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Agreement budget for the transition from Forest to Built for the two model outputs considering reference maps at 1985 and 1999 and simulated map for 1999. The plot shows the amount of correctly allocated change increases as the map resolution coarsens.\relax }}{40}
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Figure of merit scores corresponding to the agreement budgets depicted in Figure \nobreakspace {}2.7\hbox {}.\relax }}{41}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Conceptual diagram of different evapotranspiration regimes}}{51}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Soil moisture-atmosphere feedback mechanisms}}{52}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Class diagram in the Unified Modeling Language (UML) for \textbf {RHydro}, showing the main classes and methods included in the package.\relax }}{86}
+\addvspace {10\p@ }

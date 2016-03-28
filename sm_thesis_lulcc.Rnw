@@ -1,0 +1,387 @@
+<<echo=FALSE, cache=FALSE>>=
+set_parent('sm_thesis.Rnw')
+@ 
+
+\chapter{Land use change modelling}
+
+This chapter describes the development of a software package, written in R, for land use change modelling. \\
+
+%% \begin{abstract}
+%%   We present the lulcc software package; an object-oriented framework for land use change modelling written in the R programming language. The contribution of the work is to resolve the following limitations associated with the current land use change modelling paradigm: (1) The source code for model implementations is frequently unavailable, severely compromising the reproducibility of scientific results and making it impossible for members of the community to improve or adapt models for their own purposes; (2) Ensemble experiments to capture model structural uncertainty are difficult because of fundamental differences between implementations of alternative models; (3) Additional software is required because existing applications frequently perform only the spatial allocation of change. The package includes a~stochastic ordered allocation procedure as well as an implementation of the CLUE-S algorithm. We demonstrate its functionality by simulating land use change at the Plum Island Ecosystems site, using a~dataset included with the package. It is envisaged that lulcc will enable future model development and comparison within an open environment. \\
+%% \end{abstract}
+
+\newpage
+%% \introduction
+\section{Introduction}
+
+Spatially explicit land use change models are used to understand and quantify key processes that affect land use and land cover change and simulate past and future change \citep{veldkamp2001,mas2014}. These models are commonly implemented in compiled languages such as C/C++ and Fortran and distributed as software packages or extensions to proprietary geographic information systems such as ArcGIS or IDRISI. As \citet{rosa2014} points out, it is uncommon for the source code of land use change modelling software to be made available \citep[e.g.][]{verburg2002,soares-filho2002,verburg2009,schaldach2011}. While it is true that the concepts and algorithms implemented by the software are normally described in scientific journal articles, this fails to ensure the reproducibility of scientific results \citep{peng2011,morin2012}, even in the hypothetical case of a~perfectly described model \citep{ince2012}. In addition, running binary versions of software makes it difficult to detect silent faults (faults that change the model output without obvious signals), whereas these are more likely to be identified if the source code is open \citep{cai2012}. Moreover, it forces duplication of work and makes it difficult for members of the scientific community to improve the code or adapt it for their own purposes \citep{morin2012,pebesma2012,steiniger2013}. In this paper we describe the development of \textbf{lulcc}, a~new R package designed to foster an open approach to land use change science. \\
+
+Current software packages for land use change modelling usually exist as specialised applications that implement one algorithm. Indeed, it is common for applications to perform only one part of the modelling process. For example, the Change in Land Use and it Effects at Small regional extent (CLUE-S) software only performs spatial allocation, requiring the user to prepare model input and conduct the statistical analysis upon which the allocation procedure depends elsewhere \citep{verburg2002}. This is time consuming and increases the likelihood of user errors because inputs to the various modelling stages must be transferred manually between applications. Furthermore, very few programs include methods to validate model output, which could be one reason for the lack of proper validation of models in the literature, as noted by \citet{rosa2014}. The lack of a~common interface amongst land use change models is problematic for the community because there is widespread uncertainty about the appropriate model form and structure for modelling applications \citep{verburg2013}. Under these circumstances it is useful to experiment with various models to identify the model that performs best in terms of calibration and validation \citep{schmitz2009}. Alternatatively, ensemble modelling may be used to understand the impact of structural uncertainty on model outcomes \citep{knutti2012}. However, while some land use change model comparison studies have been carried out \citep[e.g][]{perez-vega2012,mas2014,rosa2014}, fundamental differences between models in terms of scale, resolution and model inputs prevent the widespread use of ensemble land use change predictions \citep{rosa2014}. As a~result, the uncertainty associated with model outcomes is rarely communicated in a~formal way, raising questions about the utility of such models \citep{pontius2005-a}. \\
+
+An alternative approach is to develop frameworks that allow several modelling approaches to be implemented within the same environment. One such application is PCRaster, a~free and open source GIS that includes additional capabilities for spatially explicit dynamic modelling \citep{schmitz2009}. The PCRcalc scripting language and development environment allows users to build models with native PCRaster operations such as map algebra and neighbourhood functions. Alternatively, the PCRaster application programming interface (API) allows users to extend its functionality in various programming languages using native and external data types \citep{schmitz2009}. For example, the current version of FALLOW \citep{vannoordwijk2002,mulia2014}, a deductive land use change model, is built using the PCRaster framework. TerraME \citep{carneiro2013} is a~platform to develop models for simulating interactions between society and the environment. It provides more flexibility than PCRaster because models can be composed of coupled sub-models with various temporal and spatial resolutions \citep{moreira2009,carneiro2013}. The platform is built on the open source TerraLib geospatial library \citep{camara2008}, which handles several spatio-temporal data types, includes an API for coupling the library with R \citep{R2014} to perform spatial statistics, and supports dynamic modelling with cellular automata. The LuccME extension to TerraME includes implementations of CLUE-S and its predecessor, CLUE \citep{veldkamp1996,verburg1999}, written in Lua. \\
+
+The R environment is a~free and open source implementation of the S programming language, a~language designed for programming with data \citep{chambers2008}. Although the development of R is strongly rooted in statistical software and data analysis, it is increasingly used for dynamic simulation modelling in diverse fields \citep{petzoldt2007}. Additionally, in the last decade it has become widely used by the spatial analysis community, largely due to the \textbf{sp} package \citep{pebesma2005,bivand2013} which unified many alternative approaches for dealing with spatial data in R and allowed subsequent package developers to use a~common framework for spatial analysis. The \textbf{raster} package \citep{hijmans2014} provides many functions for raster data manipulation commonly associated with GIS software. Building on these capabilities, several R packages have been created for dynamic, spatially explicit ecological modelling \citep[e.g.][]{petzoldt2007,fiske2011}. In addition, two recent land use change models have been written for the R environment. StocModLCC \citep{rosa2013} is a~stochastic inductive land use change model for tropical deforestation while SIMLANDER \citep{hewitt2013} is a~stochastic cellular automata model to simulate urbanisation. Thus, R is well suited for spatially explicit land use change modelling. To date, however, R has not been used to develop a~framework for land use change model development and comparison. The remainder of this paper is divided into four sections. First, we discuss the principle design goals of \textbf{lulcc}. We then describe the software and demonstrate its main functionality with an example application to the Plum Island Ecosystems site, using data included with the package. This is followed by a~discussion of the strengths and main limitations of the software and approach, as well as areas for future development. Finally we draw brief conclusions from the project.
+\\
+
+\section{Design goals}
+
+The first design goal of \textbf{lulcc} is to provide a~framework that allows users to perform various stages of the modelling process illustrated by Figure~\ref{fig:flowchart} within the same environment. It therefore includes methods to process and explore model input, fit and evaluate predictive models, allocate land use change spatially, validate the model and visualise model outputs. This provides many advantages over specialised software applications. Firstly, it improves efficiency and reduces the likelihood of user errors because intermediate inputs and outputs exist in the same environment \citep{fiske2011,pebesma2012}. Secondly, it encourages interactive model building because seperate aspects of the procedure can easily be revisited. Thirdly, it is straightforward to experiment with different model setups. Finally, and perhaps most importantly, it improves the reproducibility of scientific results because the entire modelling process can be expressed programmatically and be communicated as such with reasonable effort \citep{pebesma2012}. \\ 
+
+\textbf{lulcc} is intended as an alternative to current paradigm of closed source, specialised software programs which, in our view, disrupt the scientific process. Thus, the second design goal is to create an open and extensible framework allowing users to examine the source code, modify it for their own purposes and freely distribute changes to the wider community. The package exploits the openness of the R system, particularly with respect to the package system, which allows developers to contribute code, documentation and datasets in a~standardised format to repositories such as the Comprehensive R Archive Network (CRAN) \citep{pebesma2012,claes2014}. As a~result of this philosophy R users have access to a~wide range of sophisticated tools for statistical modelling, data management, spatial analysis and visualisation. \\
+
+One of the consequences of providing a~modelling framework in R is that users of the software must become programmers \citep{chambers2000}. We recognise that this represents a~different approach to the current practice of providing land use change software packages with graphical user interfaces (GUIs), and acknowledge that for users unfamiliar with programming it could present a~steep learning curve. Therefore, the third design goal is to provide well documented software that is easy to use and accessible for a~users with varying levels of programming experience. The package includes complete working examples to allow beginners to start using the package immediately from the R command shell, while more advanced users should be able to develop modelling applications as scripts. Furthermore, the package is designed to be extensible so that users can contribute new or existing methods. Similarly, the source code of \textbf{lulcc} is accessible so that users can locate the methods in use and understand algorithm implementations. Acknowledging that many scientists lack any formal training in programming \citep{joppa2013,wilson2014}, we hope this final goal will ensure the software is useful for educational purposes as well as scientific research. \\
+
+\section{Software description}
+
+To achieve the design goals we adopted an object-oriented approach. This provides a~formal structure for the modelling framework which allows the various stages of land use change modelling applications to be handled efficiently. Furthermore, it encourages the reuse of code because objects can be used multiple times within the same application or across several different applications. It is extensible because it is straightforward to extend existing classes using the concept of inheritance, or create new methods for existing classes. In \textbf{lulcc} we use the S4 class system \citep{chambers1998,chambers2008}, which requires classes and methods to be formally defined. This system is more rigorous than the alternative S3 system because objects are validated against the class definition when they are created, ensuring that objects behave consistently when they are passed to functions and methods. Figure~\ref{fig:classdiagram} shows the class structure of \textbf{lulcc}, while Table~\ref{table:functions} shows the functions included with the package. Here we describe the main components of \textbf{lulcc} integrated with an example application for the Plum Island Ecosystems dataset. The script used in this paper, including the code used to create the various figures, is supplied with the package as a~``demo". Instructions to obtain the package and run the demo script are provided in the Code availability section. \\
+
+\subsection{Data}
+
+The failure to provide driving data for land use change modelling exercises alongside published literature is identified by \citet{rosa2014} as a~major weakness of the discipline. The \textbf{lulcc} package includes two datasets that have been widely used in the land use change community, allowing users to quickly start exploring the modelling framework. The first of these contains data from the Plum Island Ecosystems Long Term Ecological Research site in northeast Massachusetts (\url{http://pie-lter.ecosystems.mbl.edu/}), which in recent decades has undergone extensive land use change from forest to residential use \citep{aldwaik2012}. The dataset included in \textbf{lulcc} was originally developed as part of the MassGIS program \citep{massgis2015} but has been processed by \citet{pontius2014}. Land use maps depicting forest, residential and other uses are available for 1985, 1991 and 1999 together with maps of three predictor variables: elevation, slope and distance to built land in 1985. The second dataset includes information from Sibuyan Island in the Phillipines, and is a~modified version of the dataset supplied with the CLUE-S model \citep{verburg2002}.
+
+\subsection{Data processing}
+
+One of the most challenging aspects of land use change modelling is to obtain and process the correct input data. Currently \textbf{lulcc} requires all spatially explicit input data to exist either in the file system, in any of the formats supported by \textbf{raster}, or in the R workspace as \textbf{raster} objects (RasterLayer, RasterStack or RasterBrick). The most fundamental input required by land use change models is an initial map of observed land use, which is usually obtained from classified remotely sensed data. This map represents the initial condition for model simulations and, for inductive modelling, is used to fit predictive models. Sometimes it is more useful to consider observed land use transitions: in this case an additional map for an earlier time point is required, as shown by Figure~\ref{fig:flowchart}. Ideally, two more observed land use maps for subsequent time points should be obtained for calibrating and validating the land use change model \citep{pontius2004-a}. The current version of the software only supports categorical land use data, which means that each pixel must belong to exactly one category. \\
+
+In \textbf{lulcc} observed land use data are represented by the ObsLulcRasterStack class. In the following code snippet we load the package into the current session, create an ObsLulcRasterStack object for the Plum Island Ecosystems dataset and plot the result (Figure~\ref{fig:pie}):
+\begin{verbatim}
+> library(lulcc)
+> data(pie)
+> obs <- ObsLulcRasterStack(x=pie,
+                            pattern="lu",
+                            categories=c(1,2,3),
+                            labels=c("Forest","Built","Other"),
+                            t=c(0,6,14))
+> plot(obs)
+\end{verbatim} 
+
+\noindent The ObsLulcRasterStack object is important to land use change studies in \textbf{lulcc} because it defines the spatial domain of subsequent operations. The \texttt{t} argument in the constructor function specifies the time points associated with the observed land use maps. The first time point must always be zero; if additional maps are present they should be associated with time points greater than zero, even in backcast models. In most land use change modelling applications the timestep between two time points represents one year but there is no requirement for this to be the case. \\
+
+A useful starting point in land use change modelling is to obtain a~transition matrix for observed land use maps from two time points to identify the main historical transitions in the study region \citep{pontius2004}, which can be used as the basis for further research into the processes driving change. In \textbf{lulcc} we use the \texttt{crossTabulate} function for this purpose:
+\begin{verbatim}
+> crossTabulate(x=obs, times=c(0,14)) 
+       Forest Built Other
+Forest 44107   4250   656
+Built     11  36957   154 
+Other   1259   2248 23921
+\end{verbatim}
+\noindent The output of this command reveals that for the Plum Island Ecosystems site the dominant change between 1985 and 1999 was the conversion of forest to built areas. \\
+
+Inductive and deductive land use change models predict the allocation of change based on spatially explicit biophysical and socioeconomic explanatory variables. These may be static, such as elevation or geology, or dynamic, such as maps of population density or road networks. In \textbf{lulcc} these two types of explanatory variable are separated by a~simple naming convention, which is explained in detail in the package documentation (see Supplementary material). Collectively, they are represented by an object of class ExpVarRasterList, which can be created as follows:
+\begin{verbatim}
+> ef <- ExpVarRasterList(x=pie, pattern="ef")
+\end{verbatim}
+\noindent Apart from observed land use and explanatory variables other input maps may be required. The two allocation routines currently included with \textbf{lulcc} accept a~mask file, which is used to prevent change within a~certain geographic area such as a~national park or other protected area, and a~land use history file, which is used as the basis for certain decision rules. These are handled by \textbf{lulcc} as standard RasterLayer objects. All input maps should have the same spatial resolution as the corresponding ObsLulcRasterStack object. This can be achieved using the \texttt{resample} function from the \textbf{raster} package, which has been extended to receive lulcc objects. The ExpVarRasterList object created above can be resampled to the parameters of an ObsLulcRasterStack object with the following command:
+\begin{verbatim}
+> ef <- resample(ef, obs)
+\end{verbatim}
+
+\subsection{Predictive modelling}
+
+Inductive land use change models relate the pattern of observed land use to spatially explicit explanatory variables. Logistic regression is a common type of predictive model used for inductive land use change modelling \citep[e.g.][]{pontius2001,verburg2002}. However, there is growing interest in the application of local and non-parametric models \citep[e.g.][]{tayyebi2014}. One reason why R is attractive for land use change modelling is that it has become the \textit{de facto} standard for statistical software development. As a~result, \textbf{lulcc} can easily support various predictive modelling techniques by utilising code from existing R packages. Currently, \textbf{lulcc} supports binary logistic regression, available in base R, recursive partitioning and regression trees, provided by the \textbf{rpart} package \citep{therneau2014}, and random forests, provided by the \textbf{randomForest} package \citep{liaw2002}. \\
+
+Parametric models such as logistic regression assume the data to be independent and identically distributed \citep{overmars2003}. In spatial analysis this assumption is often violated because of spatial autocorrelation, which reduces the information content of an observation because its value can to some extent be predicted by the value of its neighbours \citep{beale2010}. There is also some evidence that non-parametric models may be affected by spatial autocorrelation \citet{mascaro2014}, even though they do not assume independence. A~simple approach to reduce the impact of this phenomenon is to fit predictive models to a~random subset of the data \citep[e.g.][]{verburg2002,wassenaar2007,echeverria2008}. In the following code snippet we create training and testing partitions for the Plum Island Ecosystems dataset by performing a~stratified random sample. We do this using the map for 1985 to illustrate the procedure when only one observed map is available. We then extract the data for the training partition with the \texttt{getPredictiveModelInputData} function and pass the resulting data.frame to the three model fitting functions:
+\begin{verbatim}
+> part <- partition(x=obs[[1]], size=0.1, spatial=TRUE) 
+> train.data 
+       <- getPredictiveModelInputData(obs=obs, 
+                                      ef=ef, 
+                                      cells=part[["train"]], 
+                                      t=0) 
+
+> forms <- list(Built~ef_001+ef_002+ef_003, 
+                Forest~ef_001+ef_002, 
+                Other~ef_001+ef_002) 
+
+> glm.models   <- glmModels(formula=forms, 
+                            family=binomial, 
+                            data=train.data, 
+                            obs=obs) 
+
+> rpart.models <- rpartModels(formula=forms, 
+                              data=train.data, 
+                              obs=obs) 
+
+> rf.models    <- randomForestModels(formula=forms, 
+                                     data=train.data, 
+                                     obs=obs)
+\end{verbatim}
+\noindent The model fitting functions each return an object of class PredictiveModelList containing a~predictive model for each land use type. With these objects it straightforward to map the suitability of every pixel in the study region to the various land uses. To do this, we use the generic \texttt{predict} function with some additional functionality from the \textbf{raster} package and plot the resulting RasterStack object (Figure~\ref{fig:suitability}):
+\begin{verbatim}
+> all.data <- as.data.frame(x=ef, cells=part[["all"]]) 
+> probmaps <- predict(object=glm.models, 
+                      newdata=all.data, 
+                      data.frame=TRUE) 
+> points   <- rasterToPoints(obs[[1]], spatial=TRUE) 
+> probmaps <- SpatialPointsDataFrame(points, probmaps) 
+> probmaps <- rasterize(x=probmaps, y=obs[[1]], 
+                        field=names(probmaps)) 
+> levelplot(probmaps)
+\end{verbatim}
+
+In some circumstances it may be appropriate to supply a~model with no explanatory variables to an allocation routine. For example, \citet{verburg2009} used such a~model for natural and semi-natural vegetation because in their particular case study the selection of pixels for conversion to these land uses was based on the suitability of pixels to agricultural and urban land rather than the suitability of natural and semi-natural vegetation. In lulcc, this can most easily be achieved by fitting a~binary logistic regression model with no explanatory variables. To do this, a~formula such as \texttt{Forest\textasciitilde1} should be supplied to the \texttt{glmModels} function. \\
+
+Methods to evaluate statistical models are provided by the \textbf{ROCR} package \citep{sing2005}, allowing the user to assess model performance using various methods including the receiver operator characteristic (ROC), which is used to measure the performance of models predicting the presence or abscence of a~phenomenon \citep{pontius2014}. It is often summarised by the area under the curve (AUC), where one indicates a~perfect fit and 0.5 indicates a~purely random fit. \\
+
+In \textbf{lulcc} we extend the native \textbf{ROCR} classes to better suit our purposes. The prediction and performance classes of \textbf{ROCR} are extended by PredictionList and PerformanceList, respectively, to handle objects of class PredictiveModelList. In the folliwing example we evaluate the logistic regression models using the testing partition from the 1985 observed land use map. Since the Plum Island Ecosystems dataset contains three observed land use maps we could also test the predictive models using data from a subsequent time point. The procedure to evaluate several PredictiveModelList objects using these classes is as follows:
+\begin{verbatim}
+> test.data  
+      <- getPredictiveModelInputData(obs=obs, 
+                                     ef=ef, 
+                                     cells=part[["test"]]) 
+> glm.pred   <- PredictionList(models=glm.models, 
+                               newdata=test.data) 
+> glm.perf   <- PerformanceList(pred=glm.pred, 
+                                measure="rch") 
+> rpart.pred <- PredictionList(models=rpart.models, 
+                               newdata=test.data) 
+> rpart.perf <- PerformanceList(pred=rpart.pred, 
+                                measure="rch") 
+> rf.pref    <- PredictionList(models=rf.models, 
+                               newdata=test.data) 
+> rf.perf    <- PerformanceList(pred=rf.pred, 
+                                measure="rch") 
+> plot(list(glm=glm.perf, rpart=rpart.perf, rf=rf.perf)) 
+\end{verbatim}
+\noindent Figure~\ref{fig:roc} shows the ROC curves for each land use type and for each type of predictive model supported by \textbf{lulcc}. The plots show that binary logistic regression and random forest models perform similarly for all land uses, while regression tree models perform least well. \\
+
+Another use of ROC analysis is to assess how well the models predict the cells in which gain occurs between two time points. This is only possible if a~second observed land use map is available for a~subsequent time point. In the following code snippet we perform this type of analysis for the gain of Built between 1985 and 1991. First, we create a~data partition in which cells not candidate for gain (cells belonging to Built in 1985) are eliminated. We then assess the ability of the various predictive models to predict the gain of Built in this partition:
+\begin{verbatim}
+> part <- rasterToPoints(obs[[1]], 
+                         fun=function(x) x != 2, 
+                         spatial=TRUE) 
+> test.data <- getPredictiveModelInputData(obs=obs, 
+                                           ef=ef, 
+                                           cells=part, 
+                                           t=6) 
+> glm.pred  <- Prediction(models=glm.models[[2]], 
+                          newdata=test.data) 
+> glm.perf  <- Performance(pred=glm.pred, 
+                           measure="rch") 
+> plot(list(glm=glm.perf))
+\end{verbatim}
+\noindent Figure~\ref{fig:builtgain} shows the resulting ROC curve. \\
+
+\subsection{Demand}
+
+Spatially explicit land use change models are normally driven by non-spatial estimates of either the total number of cells occupied by each category at each time point or the number of transitions among the various categories during each time interval. This means regional drivers of land use change, such as population growth and technology, are considered implicitly \citep{fuchs2013}. While some models calculate demand at each time point based on the spatial configuration of the landscape at the previous time point \citep[e.g.][]{rosa2013}, it is more common to specify the demand for every time point at the beginning of the simulation \citep[e.g.][]{pontius2001,verburg2002,sohl2007}. In \textbf{lulcc} the way in which demand is specified is unique to individual allocation models. Currently, both allocation models currently included in the package require the total number of cells belonging to each category at every time point to be supplied as a~matrix or data.frame before running the allocation routine. \\
+
+Land use area may be estimated using non-spatial land use models or, in the case of a~backcast model, national and subnational land use statistics may be used \citep[e.g.][]{ray2010,fuchs2013}. \textbf{lulcc} includes a~function to interpolate or extrapolate land use area based on two or more observed land use maps: this approach is often used to predict the quantity of land use change in the near-term \citep{mas2014}. For the current example we obtain land use demand for each year between 1985 and 1999 by linear interpolation, as follows:
+\begin{verbatim}
+> dmd <- approxExtrapDemand(obs=obs, tout=0:14)
+\end{verbatim}
+\noindent In reality we are not usually interested in simulating land use change between two time points for which observed land use data is available. However, doing so is useful for model pattern validation, allowing us to test the ability of models to predict the spatial allocation of change given the exact quantity of change. \\
+
+\subsection{Allocation}
+The allocation algorithm in land use change models determines the pixels in which various land use transitions should take place \citep{verburg2002}. Currently \textbf{lulcc} includes two allocation routines: an implementation of the CLUE-S algorithm and a~stochastic ordered procedure based on the algorithm described by \citet{fuchs2013}. Both routines allow the user to optionally provide various decision rules. These are implemented before the main allocation algorithm at each time point and allow the user to incorporate additional knowledge about the study site. \\
+
+\subsubsection{Decision rules}
+
+The first decision rule included in \textbf{lulcc} is used to prohibit certain land use transitions. For example, in most situations it is unlikely that urban areas will be converted to agricultural land because the initial cost of urban development is high \citep{verburg2002}. The second rule specifies a~minimum number of timesteps before a~certain transition is allowed, while the third rule specifies a~maximum number of timesteps after which change is not allowed. These rules are used to control land use transitions that are time-dependent, such as the transition from shrubland to closed forest \citep{verburg2009}. The fourth rule prohibits transitions to a~certain land use in cells that are not within a~user-defined neighbourhood of cells already belonging to that land use. This rule is particularly relevant to cases of deforestation or urbanisation. \\
+
+Within the \texttt{allocate} function the first three decision rules are applied by the \texttt{allow} function and the fourth rule is applied by the \texttt{allowNeighb} function. For time dependent decision rules the user should supply a land use history raster map, specifying the length of time each pixel has belonged to the current land use. If this is not supplied each pixel is assigned a value of one, representing one model timestep. To apply neighbourhood rules it is necessary to supply corresponding neighbourhood maps to the allocation routine. In \textbf{lulcc} these are represented by the \texttt{NeighbRasterStack} class. Objects of this class are created with the following command:
+\begin{verbatim}
+> w  <- matrix(data=1, nrow=3, ncol=3)
+> nb <- NeighbRasterStack(x=obs[[1]], weights=w, 
+                          categories=c(1,2,3))
+\end{verbatim}
+
+Essentially, the \texttt{allow} and \texttt{allowNeighb} functions identify disallowed transitions according to the decision rules and set the suitability of these cells to NA. These transitions are ignored by the allocation routine. Care should be taken to ensure that after any decision rules are taken into account there are sufficient cells eligible to change in order to meet the specified demand at each time point. \\
+
+\subsubsection{CLUE-S allocation method}
+
+The CLUE-S model implements an iterative procedure to meet the specified demand at each time point and handle competition between land uses. The model is summarised briefly here: for a~full description see \citet{verburg2002} and \citet{castella2007}. The algorithm in \textbf{lulcc} is based on the description of the model provided by \citet{verburg2002} only. As a~result, for the reasons discussed by \citet{ince2012}, users should not expect to exactly reproduce the output from the original model implementation. \\
+
+In the first instance each cell is allocated to the land use with the highest suitability as determined by the predictive models. Whereas the original CLUE-S model is based on binary logistic regression, \textbf{lulcc} allows any predictive model supported by PredictiveModelList to be used. For each land use the algorithm determines whether the allocated area is less than, equal to or greater than the specified demand. If it is less than or greater than demand the suitability of each pixel in the study region to the land use in question is increased or decreased, respectively, by an amount depending on the difference between the allocated area and specified demand. If the allocated area equals demand the suitability is left unchanged. This procedure is repeated until the demand for all land uses, within a~user-defined tolerance, is met. At each iteration the original model perturbs the suitability of each pixel to the various land uses in order to limit the influence of nominal differences in land use suitability on the final model solution. This is replicated in \textbf{lulcc} with the parameter \texttt{jitter.f}, which controls the upper and lower limits of the uniform random distribution from which the perturbation applied to each pixel is drawn. The default value of \texttt{jitter.f} is zero, resulting in a~deterministic model. For a~full description of the various other parameters supplied to the CLUE-S routine please consult the package documentation. \\
+
+In \textbf{lulcc} allocation models are represented by unique classes. In the following code snippet we first set the decision rules to allow all possible transitions and then define some parameter values. Then, we create an object of class CluesModel and pass this to the generic \texttt{allocate} function:
+\begin{verbatim}
+> clues.rules <- matrix(data=1, nrow=3, ncol=3) 
+> clues.parms <- list(jitter.f=0.0002, 
+                      scale.f=0.000001, 
+                      max.iter=1000, 
+                      max.diff=50, 
+                      ave.diff=50) 
+> clues.model <- CluesModel(obs=obs, 
+                            ef=ef, 
+                            models=glm.models, 
+                            time=0:14, 
+                            demand=dmd, 
+                            elas=c(0.2,0.2,0.2), 
+                            rules=clues.rules, 
+                            params=clues.parms) 
+> clues.model <- allocate(clues.model)
+\end{verbatim}
+\noindent As an iterative procedure the CLUE-S algorithm employs for-loops, which are slow in R. To overcome this limitation we have written the CLUE-S procedure as a~C extension using the .Call interface. \\
+
+\subsubsection{Ordered method}
+
+The ordered allocation method is based on the algorithm described by \citet{fuchs2013}. The approach is less computationally expensive and more stable than the CLUE-S algorithm because it doesn't simulate competition between land uses. Instead, land allocation is performed in a~hierarchical way according to the perceived socioeconomic value of each land use. For land uses with increasing demand only cells belonging to land uses with lower socioeconomic value are considered for conversion. In this case, \textit{n} cells with the highest suitability to the current land use are selected for change, where \textit{n} equals the number of transitions required to meet the demand, as specified by the demand matrix supplied as an input to the allocation routine. The converted cells, as well as the cells that remain under the current land use, are masked from subsequent operations. For land uses with decreasing demand only cells belonging to the current land use are allowed to change. Here, \textit{n} cells with the lowest allocation suitability are converted to a~temporary class which can be allocated to subsequent land uses. The land use with the lowest socioeconomic value is a~special case because it is considered last and, therefore, the number of cells that have not been assigned to other land uses must equal the demand for this land use. \\
+
+We modify the algorithm described by \citep{fuchs2013} to allow stochastic transitions. If this option is selected, the allocation suitability of each cell allowed to change is compared to a~random number between zero and one drawn from a~uniform distribution. If demand for the land use is increasing only cells where the allocation suitability is greater than the random number are allowed to change, whereas for decreasing demand only cells where it is less than the random number are allowed to change. To make the model deterministic the user can set the \texttt{stochastic} argument to FALSE when the \texttt{allocate} function is called. \\
+
+In \textbf{lulcc} the ordered allocation model is represented by the OrderedModel class. In the following code we create an OrderedModel object, supplying the order in which to allocate change (built, forest, other), and pass this to the \texttt{allocate} function:
+\begin{verbatim}
+> ordered.model <- OrderedModel(obs=obs, 
+                                ef=ef, 
+                                models=glm.models, 
+                                time=0:14, 
+                                demand=dmd, 
+                                order=c(2,1,3)) 
+> ordered.model <- allocate(ordered.model, stochastic=TRUE)
+\end{verbatim}
+
+\subsection{Pattern validation}
+
+Spatially explicit land use change models are validated by comparing the initial observed map with an observed and simulated map for a~subsequent time point \citep{pontius2011}. Previous studies have extracted useful information from the three possible two-map comparisons \citep[e.g.][]{pontius2008}, however, recently \citet{pontius2011} devised the concept of a~three-dimensional contingency table to compare the three maps simulataneously. Not only is this approach more parsimonious, it also yields more information about quantity and allocation performance \citep{pontius2011}. For example, from the table it is straightforward to identify sources of agreement and disagreement considering all land use transitions, all transitions from one land use or a~specific transition from one land use to another. In addition, it is possible to separate agreement between maps due to persistence from agreement due to correctly simulated change. This is important because in most applications the quantity of change is small compared to the overall study area \citep{pontius2004,vanvliet2011}, giving a~high rate of total agreement which can misrepresent the actual model performance. It is useful to perform pattern validation at multiple resolutions because comparison at the native resolution of the three maps fails to separate minor allocation disagreement, which refers to allocation disagreement at the native resolution that is counted as agreement at a~coarser resolution, and major allocation disagreement, which refers to allocation disagreement at the native resolution and the coarse resolution \citep{pontius2011}. \\
+
+In \textbf{lulcc}, three-dimensional contingency tables at multiple resolutions are represented by the ThreeMapComparison class. Two subclasses of ThreeMapComparison represent two types of information that can be extracted from the tables: AgreementBudget represents sources of agreement and disagreement between the three maps at several resolutions while FigureOfMerit represents figure of merit scores. This measure, which is useful to summarise model performance, is defined as the intersection of observed and simulated change divided by the union of these \citep{pontius2011}, such that a~score of one indicates perfect agreement and a~score of zero indicates no agreement. Plotting functions for ThreeMapComparison, AgreementBudget and FigureOfMerit objects allow the user to visualise model performance. The ordered model output for Plum Island Ecosystems is validated in the following way:
+\begin{verbatim}
+> ordered.tabs <- ThreeMapComparison(x=ordered.model, 
+                                     factors=2^(1:8), 
+                                     timestep=14) 
+> ordered.agr  <- AgreementBudget(x=ordered.tabs) 
+> plot(ordered.agr, from=1, to=2) 
+> ordered.fom  <- FigureOfMerit(x=ordered.tabs) 
+> plot(ordered.fom, from=1, to=2) 
+\end{verbatim}
+\noindent This procedure was repeated for the CLUE-S model output. The agreement budgets for the transition from Forest to Built for the two allocation procedures are shown by Figure~\ref{fig:agreement}, while Figure~\ref{fig:fom} shows the corresponding figure of merit scores. \\
+
+\section{Discussion}
+
+The example application for Plum Island Ecosystems demonstrates the key strengths of the \textbf{lulcc} package. Firstly, it allows the entire modelling procedure to be carried out in the same environment, reducing the likelihood of mistakes that commonly arise when data and models are transferred between different software programs. A~framework in R specifically allows users to take advantage of a~wide range of statistical and machine learning techniques for predictive modelling. The framework allows users to experiment with various model structures interactively and provides methods to quickly compare model outputs. The example also highlights the advantages of an object-oriented approach: land use change modelling involves several stages and without dedicated classes for the associated data it would be difficult to keep track of the intermediate model inputs and outputs. \\
+
+\textbf{lulcc} is substantially different from alternative environmental modelling frameworks. Most importantly, \textbf{lulcc} is designed for land use change modelling only, whereas frameworks such as PCRaster and TerraME provide general tools that can be applied to various spatial analysis problems such as land use change, hydrology and ecology. As a~result, these tools are targeted towards the model developer rather than the end user. In contrast, most software programs for land use change modelling are designed with the user in mind, with very few providing any way for users or developers to improve or even understand model implementations. With \textbf{lulcc} we have attempted to reduce the gap between user and developer. The R system is well suited for this task, as \citet{pebesma2012} notes ``the step from being a~user to becoming a~developer is small with R". The package system ensures that \textbf{lulcc} will work across Windows, MacOS and Unix platforms, whereas many existing applications are platform dependent. Comprehensive documentation of the functions, classes and methods of \textbf{lulcc}, together with complete working examples, enable the user to immediately start using the software, while the object-oriented design ensures that developers can easily write extensions to the package. \\
+
+Despite its manifest advantages, there remain some drawbacks to land use change modelling in R. Firstly, the lack of a~spatio-temporal database backend to support larger datasets \citep{gebbert2014} restricts the amount of data that can be used in a~given application because R loads all data into memory. The \textbf{raster} package overcomes this limitation by storing raster files on disk and processing data in chunks \citep{hijmans2014}. \textbf{lulcc} has been designed to make use of this facility where possible, however, during allocation it is necessary to load the values of several maps into the R workspace at once because the allocation procedure must consider every cell eligible for change simultaneously. The generic \texttt{predict} function belonging to the \textbf{raster} package offers one possible solution to this problem, allowing predictive models to be used in a~memory-safe way. In effect, this would mean spatially explicit input data including observed land use maps and explanatory variables could be handled in chunks and only the resulting probability surface would have to be loaded into the R workspace. However, this is not currently implemented in \textbf{lulcc} because it is excessively time consuming compared to the current approach. Despite this limitation, since most applications involve a~relatively small geographic extent or, in the case of regional studies \citep[e.g.][]{verburg2009,fuchs2015}, use a~coarser map resolution, memory should not normally cause \textbf{lulcc} applications to fail. For example, the CluesModel and OrderedModel objects from the above example each had a~size of approximately 40Mb, which is easily handled by modern personal computers. On a~64-bit machine with Intel Core i3 @ 1.4 GHz and 4Gb RAM, the allocation methods for the two Model objects took 50 seconds and 8 seconds, respectively. \\
+
+The software presented here is still in its infancy and there are several areas for improvement. The present allocation routines receive the quantity of land use change for each time point before the allocation procedure begins. However, some recent models do not impose the quantity of change but instead allow change to occur stochastically based on land use suitability. For example, StocModLcc \citep{rosa2013} deforests a~cell if the probability of deforestation is less than a~random number from a~uniform distribution. The quantity of change is simply the number of cells deforested after each cell in the study region is considered for deforestation twice, with the probability of change, which depends on the allocation of previous deforestation events, updated after the first round. One advantage of this approach is that it accounts for uncertainty in the quantity and allocation of change simultaneously, whereas the current routines in \textbf{lulcc} only consider the allocation of change as a~stochastic process. Other models such as LandSHIFT \citep{schaldach2011} receive demand at the national or regional level from integrated assessment models such as IMAGE \citep{stehfast2014} or Nexus Land-Use \citep{souty2012}. Coupling \textbf{lulcc} with this class of model would be a~valuable addition to the software because land use change is increasingly recognised as an issue with drivers and implications at local, regional, continental and global levels. \\
+
+An important contribution of \textbf{lulcc} is to provide modules to assist with model pattern validation, a~crucial aspect of model development that is nevertheless frequently overlooked within the land use change modelling community \citep{rosa2014}. A~further improvement that could be made to the package is to incorporate more sophisticated ways of fitting and testing the predictive models that estimate land use suitability. For example, a~routine to calculate the Total Operating Characteristic (TOC) \citep{pontius2014} would improve upon the ROC analysis currently supported. While ROC shows two ratios, hits/(hits+misses) and false alarms/(false alarms+correct rejections), at multiple resolutions, TOC reveals the quantities used to calculate these ratios, allowing greater interpretation of model diagnostic ability. \\
+
+One of the main strengths of \textbf{lulcc} is that multiple model structures can be explored within the same environment. Thus, the more allocation routines available in the package the more useful it becomes. Two existing land use change models, StocModLCC and SIMLANDER, are written in R and available as open source software. Future work could integrate these routines with \textbf{lulcc} to broaden the available model structures and, therefore, improve the ability of \textbf{lulcc} to capture model structural uncertainty. The methods in the current version of \textbf{lulcc} only permit an inductive approach to land use change modelling. Deductive models are fundamentally different because they attempt to model explicitly the processes that drive land use change \citep{perez-vega2012}. This means that, unlike inductive models, they can be used to establish causality between land use change and its driving factors \citep{overmars2007}. Including this class of model in \textbf{lulcc} would allow inductive and deductive land use change models with different spatial resolutions to be dynamically coupled in order to better capture the complexity of the land use system \citep{moreira2009}. \\
+
+Free and open source software improves the reproducibility of scientific results and allows users to adapt and extend code for their own purposes. Thus, we encourage the land use change community to participate in the future development of \textbf{lulcc}. Perhaps one of the simplest ways to improve the package is to experiment with the example datasets to identify bugs and areas for improvement. Those with more programming experience may wish to extend the functionality of the package themselves and contribute these changes upstream. In addition, existing land use change models can easily be included in the package by wrapping the original source code in R; a~relatively straightforward task for commonly used compiled languages (C/C++, Fortran). Users may also develop their own R packages that depend on \textbf{lulcc} for some functionality: this is one of the strengths of the R package system. Finally, we invite land use change modellers to submit land use change datasets (observed and, if possible, modelled land use maps and spatially explicit explanatory variables) for inclusion in the package. \\
+
+%% \conclusions
+\section{Conclusion}
+In this paper we have presented \textbf{lulcc}, a~free and open source software package providing an object-oriented framework for land use change modelling in R. \textbf{lulcc} allows various aspects of the modelling process to be performed within the same environment, supports three types of predictive model and includes two allocation routines. The modelling process can be expressed programmatically, facilitating reproducible science. Releasing the software under an open source licence (GPL) means that users have access to the algorithms they implement when they run a~particular model. As a~result, they can identify improvements to the code and, under the terms of the licence, are free to redistribute changes to the wider community. We view \textbf{lulcc} as an initial step towards an open paradigm for land use change modelling and hope, therefore, that the community will participate in its development. \\
+
+\section*{Code availability}
+The R project for statistical computing is available for Windows, MacOS and several Unix platforms. To download R, visit the project homepage: \url{https://www.r-project.org/}. Two popular and free integrated development environments (IDEs) are provided by RStudio (\url{https://www.rstudio.com/}) and ESS (\url{http://ess.r-project.org/}). We suggest that potential \textbf{lulcc} users familiarise themselves with the \textbf{raster} package by reading the ``Introduction to the raster package" vignette, available on the package homepage: \url{https://cran.r-project.org/web/packages/raster/}. \\
+
+The \textbf{lulcc} source code currently resides on CRAN. This paper corresponds to version 1.0 of the package. It can be downloaded from the R command line as follows:
+\begin{verbatim}
+> install.packages("lulcc")
+\end{verbatim}
+\noindent The script for the Plum Island Ecosystems application is available as a~demo within the package. To load the package and run the demo, type the following commands:
+\begin{verbatim}
+> library(lulcc)
+> demo(package = "lulcc")
+> demo(topic = "gmd-paper")
+\end{verbatim}
+
+\begin{figure}[t]
+  \includegraphics[width=8.3cm]{figs/f01_flowchart.pdf}
+  \caption{Diagram showing the general methodology used for inductive land use change modelling applications, adapted from \citet{mas2014}. The input land use/land cover data can be a~single categorical map showing the pattern of land use/land cover at one time point (LULC (t1)) or a~series of maps showing historical land use/land cover transitions (LULCC (t1-t0)).}
+  \label{fig:flowchart}
+\end{figure}
+
+\begin{figure}[t]
+  \includegraphics[width=12cm]{figs/f02_class_diagram_revised.pdf}
+  \caption{Class diagram in the Unified Modeling Language (UML) for \textbf{lulcc}, showing the main classes and methods included in the package.}
+  \label{fig:classdiagram}
+\end{figure}
+
+\begin{table*}[t]
+\caption{Functions included in the \textbf{lulcc} package}
+\begin{tabular}{ p{3.5cm} p{8.5cm} }
+%% \tophline
+\hline
+Function name & Description \\
+%% \middlehline
+\hline
+AgreementBudget    & Calculate agreement budget \citep{pontius2011} \\
+getPredictiveModelInputData & Create data.frame with variables required to fit predictive models \\
+allocate           & Perform spatial allocation using various methods \\
+approxExtrapDemand & Create a~demand scenario by linear extrapolation \\
+compareAUC         & Compare the area under the curve (AUC) for various predictive models \\
+crossTabulate      & Calculate the contingency table for two categorical raster maps \\
+FigureOfMerit      & Calculate the figure of merit \citep{pontius2011} \\
+glmModels          & Fit multiple glm models \\
+NeighbRasterStack  & Calculate neighbourhood values \\
+partition          & Partition Raster* map \\
+PredictionList     & Create a~ROCR prediction object for each model in a~PredictiveModelList object \\
+PerformanceList    & Create a~ROCR performance object for each prediction object contained in a~PredictionList object \\
+predict            & Make predictions using a~PredictiveModelList object \\
+randomForestModels & Fit multiple random forest models \\
+rpartModels        & Fit multiple recursive partitioning and regression tree models \\
+resample           & Resample an ExpVarRasterList object to the parameters of an ObsLulcRasterStack object \\
+ThreeMapComparison & Calculate three-dimensional contingency tables \citep{pontius2011} \\
+total              & Sum the total number of cells belonging to each class of a~categorical raster map \\
+%% \bottomhline
+\hline
+\end{tabular}
+\label{table:functions}
+%% \belowtable{}
+\end{table*}
+
+\begin{figure}[h]
+  \includegraphics[width=12cm]{figs/f03_pie.pdf}
+  \caption{Observed land use maps for the Plum Island Ecosystems site in 1985, 1991 and 1999, created by plotting the ObsLulcRasterStack object representing the data.}
+  \label{fig:pie}
+\end{figure}
+
+\begin{figure*}[t]
+  \includegraphics[width=12cm]{figs/f04_suitability.pdf}
+  \caption{Suitability of pixels in the Plum Island Ecosystems study site to belong to Forest, Built and Other land use classes according to binary logistic regression models. Elevation and slope are used as explanatory variables for all land uses while Built additionally includes distance to built pixels in 1985.}
+  \label{fig:suitability}
+\end{figure*}
+
+\begin{figure}[t]
+  \includegraphics[width=12cm]{figs/f05_roc.pdf}
+  \caption{ROC curves showing the ability of each type of predictive model to simulate the observed pattern of land use in the Plum Island Ecosystems site in 1985 in the data partition left out of the fitting procedure.}
+  \label{fig:roc}
+\end{figure}
+
+\begin{figure}[t]
+  \includegraphics[width=8.3cm]{figs/f06_builtgain.pdf}
+  \caption{ROC curve showing the ability of the binary logistic regression model fitted on observed land use data from 1985 to predict the gain in Built land between 1985 and 1991.}
+  \label{fig:builtgain}
+\end{figure}
+
+\begin{figure}[t]
+  \includegraphics[width=12cm]{figs/f07_agreement.pdf}
+  \caption{Agreement budget for the transition from Forest to Built for the two model outputs considering reference maps at 1985 and 1999 and simulated map for 1999. The plot shows the amount of correctly allocated change increases as the map resolution coarsens.}
+  \label{fig:agreement}
+\end{figure}
+
+\begin{figure}[t]
+  \includegraphics[width=12cm]{figs/f08_figure_of_merit.pdf}
+  \caption{Figure of merit scores corresponding to the agreement budgets depicted in Figure ~\ref{fig:agreement}.}
+  \label{fig:fom}
+\end{figure}
+
+%% \section{Literature review}
+
+%% \subsection{Land use change modelling}
+
+%% A time series dataset of land cover maps for northern India is essential to assess the impact of land use change on regional water resources and climate. However, given the limitations of supervised and unsupervised classification methods, discussed previously, and the poor quality and availability of satellite images before the launch of NASA's Terra and Aqua satellites, the dataset should be produced using alternative methods. Land use change models are widely used to gain insight into the drivers of land use change and make projections of future land cover change under different scenarios \citep{Veldkamp2001}. Such modelling efforts are frequently used to support land use planning and environmental management \citep{Verburg2002}. However, they may also be used to extrapolate land cover back in time in order to increase the temporal extent of existing land use and land cover maps \citep{Verburg2002}. This method is particularly suited to regions where non spatial census data on the relative area of different land use and land cover types can be used to constrain the model. \\ 
+
+%% The Change in Land Use and its Effects (CLUE) modelling framework \citep{Veldkamp1996} was originally designed to work at a coarse resolution on the national scale. The model works by relating observed land cover to spatially explicit biophysical and socioeconomic driving factors through a statistical model. Biophysical drivers include the suitability of land for different land use types in terms of climate, soil type and elevation, amongst others. Socioeconomic drivers include factors such as population, economic and technological development and political structure. The CLUE-s model \citep{Verburg2004,Verburg2002} extended the CLUE model for regional scales. The key difference between the two models is the spatial resolutions at which they operate \citep{Verburg2002}. Whereas applications of the CLUE model \citep[e.g.][]{Veldkamp1996,Verburg1999} typically relied on census data for model inputs, restricting the spatial resolution to the size of the smallest administrative unit for which data was available, the CLUE-s model is designed to utilise remotely sensed datasets with a finer spatial resolution. \\
+
+%% The CLUE-s model is divided into a non spatial demand module, which specifies the total area of each land cover type at each time step, and a spatially explicit allocation module which allocates land cover change spatially according to the driving factors \citep{Verburg2002}. The basis of the allocation module is a logit model which defines for each grid cell the probability that it is filled with a certain land cover type given a set of driving factors. The logit model can be expressed as:
+
+%% \begin{equation} \label{eq:logit}
+%% Log\left(\frac{p_{i}}{1-p_{i}}\right) = \beta_{0} + \beta_{1} X_{1,i} + \beta_{2} X_{2,i} + ... + \beta_{n} X_{n,i}
+%% \end{equation} 
+
+%% \noindent where $ p_{i} $ is the probability that grid cell $ i $ contains the considered land cover type and $ X_{1,i} $, $ X_{2,i} $, ..., $ X_{n,i} $ are driving factors. The value of the regression coefficients, $ \beta_{0} $, $ \beta_{1} $, $ \beta_{2} $, $ ... $, $ \beta_{n} $, are determined by fitting the model to observed land use in a stepwise procedure whereby factors that have insignificant explanatory power are excluded from the final model equation. The goodness of fit to the observed data is assesed using the receiver operator characteristic \citep{Pontius2001} which compares the predicted probabiities against the observed land cover for different threshold values covering the full range of predicted probabilities. The CLUE-s methodology is shown by Figure \ref{fig:allocation}. \\
+
+%% \setlength{\floatsep}{1pt}
+%% \begin{figure}
+%% \centering
+%% \includegraphics[width=0.8\textwidth]{figs//clues_allocation}
+%% \caption[CLUE-s allocation procedure]{Diagram showing CLUE-s allocation procedure \citep{Verburg2002}}
+%% \label{fig:allocation}
+%% \end{figure}

@@ -1,0 +1,8 @@
+<<echo=FALSE, cache=FALSE>>=
+set_parent('sm_thesis.Rnw')
+@ 
+
+\chapter{India irrigation}
+
+While spatially explicit information about land cover... \\
+

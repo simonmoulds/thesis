@@ -1,0 +1,7 @@
+<<echo=FALSE, cache=FALSE>>=
+set_parent('sm_thesis.Rnw')
+@ 
+
+\chapter{Conclusion}
+
+TODO

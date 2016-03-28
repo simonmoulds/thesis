@@ -1,14 +1,67 @@
-\contentsline {chapter}{\numberline {1}Introduction}{6}
-\contentsline {chapter}{\numberline {2}Literature review}{8}
-\contentsline {section}{\numberline {2.1}Surface energy and water balances}{8}
-\contentsline {subsection}{\numberline {2.1.1}Surface energy balance}{8}
-\contentsline {subsection}{\numberline {2.1.2}Moist static energy}{9}
-\contentsline {subsection}{\numberline {2.1.3}Surface water balance}{10}
-\contentsline {section}{\numberline {2.2}Soil moisture feedbacks}{10}
-\contentsline {section}{\numberline {2.3}Role of vegetation in soil moisture feedbacks}{13}
-\contentsline {section}{\numberline {2.4}Assessing the impact of the land surface on the Asian monsoon}{13}
-\contentsline {section}{\numberline {2.5}Mapping land cover}{16}
-\contentsline {subsection}{\numberline {2.5.1}Global land cover products}{17}
-\contentsline {subsection}{\numberline {2.5.2}Land use change modelling}{19}
-\contentsline {section}{\numberline {2.6}Summary}{21}
-\contentsline {chapter}{Bibliography}{24}
+\contentsline {chapter}{\numberline {1}Introduction}{8}
+\contentsline {section}{\numberline {1.1}Hydroflux India}{8}
+\contentsline {section}{\numberline {1.2}Historical land use/land cover}{9}
+\contentsline {section}{\numberline {1.3}Model coupling}{10}
+\contentsline {section}{\numberline {1.4}Open science}{10}
+\contentsline {subsection}{\numberline {1.4.1}Aim}{10}
+\contentsline {subsection}{\numberline {1.4.2}Objectives}{10}
+\contentsline {subsection}{\numberline {1.4.3}Structure of thesis}{10}
+\contentsline {chapter}{\numberline {2}Land use change modelling}{11}
+\contentsline {section}{\numberline {2.1}Introduction}{12}
+\contentsline {section}{\numberline {2.2}Design goals}{14}
+\contentsline {section}{\numberline {2.3}Software description}{16}
+\contentsline {subsection}{\numberline {2.3.1}Data}{16}
+\contentsline {subsection}{\numberline {2.3.2}Data processing}{17}
+\contentsline {subsection}{\numberline {2.3.3}Predictive modelling}{19}
+\contentsline {subsection}{\numberline {2.3.4}Demand}{23}
+\contentsline {subsection}{\numberline {2.3.5}Allocation}{24}
+\contentsline {subsubsection}{Decision rules}{24}
+\contentsline {subsubsection}{CLUE-S allocation method}{25}
+\contentsline {subsubsection}{Ordered method}{27}
+\contentsline {subsection}{\numberline {2.3.6}Pattern validation}{28}
+\contentsline {section}{\numberline {2.4}Discussion}{30}
+\contentsline {section}{\numberline {2.5}Conclusion}{33}
+\contentsline {chapter}{\numberline {3}Land cover change in India}{42}
+\contentsline {section}{\numberline {3.1}Literature review}{42}
+\contentsline {section}{\numberline {3.2}Mapping land cover}{42}
+\contentsline {subsection}{\numberline {3.2.1}Global land cover products}{43}
+\contentsline {chapter}{\numberline {4}India irrigation}{46}
+\contentsline {chapter}{\numberline {5}Hydrometeorological feedbacks in Northern India}{47}
+\contentsline {section}{\numberline {5.1}Literature review}{48}
+\contentsline {subsection}{\numberline {5.1.1}Surface energy and water balances}{48}
+\contentsline {subsubsection}{Surface energy balance}{48}
+\contentsline {subsubsection}{Moist static energy}{49}
+\contentsline {subsubsection}{Surface water balance}{49}
+\contentsline {subsection}{\numberline {5.1.2}Soil moisture feedbacks}{50}
+\contentsline {subsection}{\numberline {5.1.3}Role of vegetation in soil moisture feedbacks}{52}
+\contentsline {subsection}{\numberline {5.1.4}Assessing the impact of the land surface on the South Asian monsoon}{53}
+\contentsline {subsection}{\numberline {5.1.5}Summary}{56}
+\contentsline {section}{\numberline {5.2}Materials and methods}{58}
+\contentsline {subsection}{\numberline {5.2.1}Study region}{58}
+\contentsline {subsection}{\numberline {5.2.2}JULES}{58}
+\contentsline {subsection}{\numberline {5.2.3}Input data}{58}
+\contentsline {subsubsection}{Land cover}{58}
+\contentsline {subsubsection}{Meteorological data}{58}
+\contentsline {subsubsection}{Ancillary data}{58}
+\contentsline {subsection}{\numberline {5.2.4}Procedure}{58}
+\contentsline {section}{\numberline {5.3}Results}{58}
+\contentsline {section}{\numberline {5.4}Discussion}{59}
+\contentsline {section}{\numberline {5.5}Conclusion}{59}
+\contentsline {chapter}{\numberline {6}Facilitating workflows in the hydrological sciences}{60}
+\contentsline {section}{\numberline {6.1}Literature review}{61}
+\contentsline {subsection}{\numberline {6.1.1}Trends in hydrological modelling}{61}
+\contentsline {subsection}{\numberline {6.1.2}Modelling complex systems}{65}
+\contentsline {section}{\numberline {6.2}Software design}{69}
+\contentsline {subsection}{\numberline {6.2.1}Classes}{70}
+\contentsline {subsection}{\numberline {6.2.2}Methods}{72}
+\contentsline {subsubsection}{Creation}{72}
+\contentsline {subsubsection}{Coercion}{76}
+\contentsline {subsubsection}{Indexing}{77}
+\contentsline {subsubsection}{Aggregation and resampling}{79}
+\contentsline {section}{\numberline {6.3}Example applications}{80}
+\contentsline {subsection}{\numberline {6.3.1}Plynlimon}{80}
+\contentsline {subsubsection}{Evapotranspiration}{81}
+\contentsline {subsection}{\numberline {6.3.2}Reservoir operation}{81}
+\contentsline {section}{\numberline {6.4}Discussion}{82}
+\contentsline {section}{\numberline {6.5}Conclusion}{85}
+\contentsline {chapter}{\numberline {7}Conclusion}{87}

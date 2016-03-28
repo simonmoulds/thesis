@@ -1,0 +1,693 @@
+<<echo=FALSE, cache=FALSE>>=
+set_parent('sm_thesis.Rnw')
+@ 
+
+%% Facilitating hydrological data analysis workflows in R: the RHydro package (EGU 2015 presentation title)
+\chapter{Facilitating workflows in the hydrological sciences}
+
+%% Hydrology is an earth science that studies the distribution and quality of water in time and space \citep{}. 
+
+%% introduce the idea of modelling and broad model categories
+Hydrological modelling is often used to inform water resources management decisions... Scientific hydrology is concerned with improving our understanding of hydrological systems. Hydrological models reflect the combined knowledge of the community \citep{}. Modelling itself is a learning process \citep{box1976}
+
+\citet{shao2009} defines a scientific workflow as 'a set of experiments performed in an order that is consistent with certain constraints in order to achieve a scientific goal'. More specifically, in the hydrological sciences a workflow describes data manipulation and modelling required to simulate or forecast a set of output variables.
+
+The advent of new technologies such as distributed computing and the Semantic Web, combined with the ever-expanding volume of environmental data, will change the way that models are built and used \citep{beven2007,salas2012,bastin2012}. Alongside the scientific challenge of designing adequate workflows to answer specific questions is the technical challenge of implementing them efficiently \citep{vitolo?}. Data processing languages, especially R \citep{R2015} and Python, are quickly gaining popularity because they combine a wide array of functionality with high flexibility and versatility. In this paper, we explore how handling and processing of hydrological data in R can be facilitated further by designing and implementing a set of relevant classes and methods in the experimental R package RHydro. \\
+
+%% ...including those related to flood protection and water resources management \citep{sivapalan2003}. Instead, there was a concerted effort to improve scientific understanding of catchment scale hydrological processes \citep{hrachowitz2013}. As a result of the PUB Scientific Decade, there is now... \\
+
+%% ...has led to the development of numerous hydrological models \citep{clark2011,weiler2015}. 
+%% There has been much debate about the appropriate type of uncertainty analysis for different applications in hydrological modelling (see debate in \citet{beven2006,beven2008,beven2012-c,beven2012-a,clark2011,clark2012,montanari2007}). 
+
+\newpage
+\section{Literature review}
+
+\subsection{Trends in hydrological modelling}
+
+%% To engineers, hydrological models are primarily tools for problem solving and decision making \citep{savenije2009}. To scientists, 
+
+%% Hydrological models represent our perceptual understanding of the way that a system functions \citep{savenije2009,hrachowitz2013}. \\
+ %% and, thus, encapsulate the knowledge and understanding of the community \citep{savenije2009}
+%% In scientific hydrology models represent hypotheses about the way that the real world functions \citep{savenije2013}. 
+
+Hydrological modelling is fundamental to the hydrological sciences \citep{buytaert2008}. Models provide a representation of the hydrology of a catchment to forecast its response to future conditions or to simulate the behaviour of catchments where no output or state variables are measured \citep{beven2001}. A useful classification scheme for hydrological models proposed by \citet{wheater1993} divides models into empirical, conceptual and process-based models. Empirical models seek to characterise aspects of catchment behaviour from observations of input and output variables \citep{wheater2002,pechlivanidis2011}. Conceptual models consist of simplified representations of the hydrological processes perceived to influence the system response and include parameters that do not correspond with physical quantities and, therefore, must be inferred from observations \citep{kavetski2006}. Process-based models are based on mathematical equations describing physical processes \citep{montanari2012,beven2013-a}. They have variously been referred to as ``physics-based'' or ``physically-based'' models; however, since all models in practice contain simplifications of the actual physics, ``process-based'' is a more precise description of the modelling approach \citep{montanari?}. The IAHS Scientific Decade (2003--2012) Predictions in Ungauged Basins (PUB) was formulated on the basis of concern amongst hydrologists that empirical methods were unable to deal with a range of issues that required predictions of streamflow in ungauged basins or under non-stationary conditions \citep{sivapalan2003}. Thus, over the course of the Scientific Decade there was a concerted effort to improve scientific understanding of catchment scale hydrological processes \citep{hrachowitz2013}. Following the PUB initiative there is consensus in the scientific hydrological community that models should be viewed as hypotheses about system behaviour and that modelling itself is a learning process \citep{hrachowitz2013}. This realisation has led to the proper application of the scientific method of \citet{popper1959} in the hydrological sciences \citep[e.g.][]{buytaert2011}. \\
+
+Hydrological models are associated with a large amount of epistemic uncertainty arising from a lack of knowledge about the appropriate mathematical representation of hydrological processes at different spatial scales, a lack of knowledge about the physical properties and boundary conditions of catchments and a lack of knowledge about the reliability of input and validation datasets \citep{beven1989,beven2012,clark2011,clark2015,gupta2012,mount2016}. While in theory process-based models contain parameters that refer to measurable quantities, in practice models rely on calibrated, ``effective'' parameter values to implicitly account for the spatial heterogeneity of catchment properties and incomplete process understanding \citep{mcdonnell2007,savenije2009,sivakumar2009,beven2012}. Thus, both conceptual and process-based models are calibrated to some degree giving rise to the notion that for a given place various model structures and parameter sets are capable of simulating response variables equally well, known as equifinality \citep{beven2001,beven2006-a,beven2012-b}. Consequently there is a lack of agreement about the appropriate model structure for different applications \citep{}, which has led to the development of numerous hydrological models to address a wide range of scientific and engineering questions \citep{beven2001,clark2011,weiler2015}. \\
+
+The various models accumulated by the hydrological modelling community may be viewed as working hypotheses about the hydrological behaviour of various places \citep{clark2008,savenije2009,clark2011,gupta2014}. To develop better models there is a need to identify the strengths and weaknesses of current models and highlight the processes and systems that are poorly understood in order to drive the collection of new or more accurate data and devise field studies of specific processes \citep{buytaert2008,clark2012,gupta2012}. This is one of the main aims of uncertainty analysis \citep{buytaert2008,clark2012,gupta2012}, and fundamental to the notion of modelling as a learning process. However, while there have been several model intercomparison studies in recent years \citep[e.g.][]{wood1998,yang2000,reed2004,pebesma2005,duan2006,breuer2009,smith2012}, these have largely failed to diagnose differences in model performance because the structure and implementation of different models varies so widely \citep{kampf2007,fenicia2008,clark2011,clark2015}. The problem is made worse by the fact that it is hard to resolve structural errors in calibrated models because of problems arising from equifinality \citep{kirchner2006}. \\ 
+
+%% \citep{clark2011,fenicia2011,euser2013}.
+According to \citet{clark2011}, hydrological models should be viewed as a collection of coupled hypotheses about different aspects of the catchment system. These component hypotheses cannot necessarily be tested at the level of the system as a whole because of potentially complex relationships between constituent parts within the model structure that can obfuscate model deficiencies \citep{clark2011,clark2012}. Thus, in order to test, and potentially reject, model structures as hypotheses it is necessary to isolate model components and evaluate them independently as well as in combination with different representations of linked processes \citep{clark2011}. This is challenging because existing models vary substantially in conceptualisation and implementation \citep{castronova2013,clark2015}. The fact that many hydrological models are released as closed source software packages is a fundamental impediment to scientific progress which limits the reproducibility of scientific results and forces modellers to duplicate the work of others \citep{morin2012,steiniger2013,moulds2015}. Consequently model development to date has occurred on an \textit{ad hoc} basis, relying on the efforts of individuals and research groups rather than a systematic effort by the entire hydrological modelling community \citep{buytaert2008,clark2015,troy2015,weiler2015}. A lack of discourse between modellers and field experimentalists means that the current generation of hydrological models fo not reflect advances in process understanding gained from field studies \citep{mcdonnell2007,clark2011}. \\
+
+%% facilitates hypothesis testing of model components and the inclusion of additional and alternative process representations. %% as our perceptual understanding of a system improve.
+Recognising these issues, members of the community have started to question whether a new approach to hydrological modelling is required \citep[e.g.][]{sivapalan2009,savenije2009}. In particular there has been a concerted effort to develop flexible modelling frameworks that facilitate the systematic development, evaluation and comparison of multiple model structures as hypotheses of catchment behaviour, and the inclusion of additional and alternative process representations as our perceptual understanding of the system improves. This approach recognises the fact that each catchment is unique and that fixed model structures are incapable of handling natural variability in space and time \citep{beven2000}. In conceptual modelling the Framework for Understanding Structural Errors (FUSE) \citet{clark2008} allows different representations of model components within a fixed model architecture, while SUPERFLEX \citep{fenicia2011,kavetski2011} provides a more flexible approach to model building by allowing various combinations of generic model components. The Structure for Unifying Multiple Modeling Alternatives (SUMMA) \citep{clark2015-b,clark2015-a} aims to provide a unified framework for developing process-based hydrological models. Many of these frameworks are implemented as open source software projects encouraging users of the software to contribute to model development \citep{clark2015-b}. While these frameworks are useful modelling tools in themselves, they may also be used as test-beds for a community hydrological model of the type proposed by \citet{weiler2015} or the next generation of ``hyper-resolution'' land surface models suggested by \citet{wood2011} and debated elsewhere \citep{beven2012,wood2012,nazemi2015}. \\
+
+%% It facilitates the development and comparison of multiple model structures as hypotheses about the functioning of hydrological systems by providing interchangeable model components \citep{clark2015-a}. \\
+
+%% paragraph  4: socio-hydrological modelling: motivation and approach
+A recent advance in our perceptual understanding of hydrological systems is the recognition that the water cycle is no longer governed entirely by natural processes but also, increasingly, by anthropogenic activities \citep{montanari2013,savenije2014,sivapalan2015}. This has given rise to the nascent field of socio-hydrology, which is concerned with understanding the feedbacks and interactions between coupled human-water systems in order to improve the resilience and sustainability of these systems under environmental and social change \citep{sivapalan2012}. Its fundamental importance to the wider discipline of hydrology is demonstrated by its central role in defining the current IAHS Scientific Decade (2013-2022), ``Panta Rhei--Everything Flows'' \citep{montanari2013}, which aims to gain new insight into the processes governing the hydrological cycle by concentrating research activities on the interactions between society and the environment \citep{montanari2013,mcmillan2016}. In their introduction to the Scientific Decade, \citet{montanari2013} draw attention to the fact that the current generation of hydrological models have mostly been developed for the analysis of pristine catchments, with human impacts on the environment generally represented through separate models. Socio-hydrological modelling instead treats anthropogenic activities as an integral part of the water cycle rather than an external forcing \citep{troy2015}. It aims to provide insight into the mechanisms and drivers of human-water interactions, support decision-making and policy development and make forecasts and predictions about the response of socio-hydrological systems under future conditions \citep{kelly2013,blair2016}. \\
+
+%% According to \citet{savenije2014}, humans impact the hydrological cycle in four principle ways: (1) exploiting water resources for domestic, industrial and agricultural uses, (2) developing infrastructure that alters the natural characteristics of river networks, (3) altering the properties of catchments through land use change and intensification, and (4) anthropogenic climate change which alters the hydrological cycle.
+
+%% paragraph 5: complexity
+Coupled human-water systems are complex systems involving `multiple interacting components, local connections and nonlinear relationships between the components' \citep{troy2015}. Developing models of these systems is challenging for various reasons. Different system components interact at different spatial and temporal scales \citep{elshafei2014}. There is epistemic uncertainty about the relationships between system components, particularly concerning indirect relationships, alongside the aleatory and epistemic uncertainty associated with models of individual system components, including those representing hydrological processes \citep{elshafei2014,dibaldassare2015-a,mount2016}. Furthermore, it requires effective collaboration between diverse research communities in order to include the state-of-the-art in terms of the knowledge and understanding of system components \citep{blair2016}, which is often difficult \citep{montanari2013}. Current socio-hydrological models mainly consist of stylized relationships intended to develop hypotheses about the system and explore its behaviour under different scenarios of social and environmental change \citep[e.g.][]{vanemmerik2014,dibaldassare2015-a,garcia2016}. However, in the future there will be a need to incorporate more realistic models capable of providing insight into socio-hydrological systems rather than simply reinforcing what is already known \citep{troy2015,loucks2015,blair2016}, as well as making predictions about the co-evolution of social and hydrological systems under future conditions \citep{}. This will involve more complete models of human behaviour \citep{loucks2015}, as well as more accurate models of hydrological systems \citep{gober2015,mount2016}. \\
+
+%% Indeed, one of the aims of the current Scientific Decade is to devise models that fully integrate social processes  In such a way that socio-hydrology is not seen as separate to more traditional forms of hydrological modelling but rather an integral part \citep{}.
+
+%% Coupled-component models integrate specialised models of system components to provide a representation of the system as a whole \citep{kelly2013,blair2016}. Thus, separating models into components is desirable to facilitate model building and developing model structures as multiple working hypotheses about the system \citep{troy2015-a}. To date, however, socio-hydrological models have been usually been developed in an \textit{ad hoc} manner as specialist software tools in which the model equations are tightly coupled. Some researchers have released their model implementations alongside publications \citep[e.g.][]{garcia2016}, while others have not. \\
+
+%% The advantage of coupled-component models is that they allow `detailed representations of system components' by exploiting the expertise, manifested in models, of separate research communities \citep{kelly2013}. Component models have usually been validated in the system domain they represent \citep{voinov2013,blair2016}. Furthermore, the process of bringing together expertise from traditionally separate research communities, such as water resources management and social sciences, facilitates transdisciplinary learning \citep{blair2016}. \\
+
+%% The observation made by \citet{clark2011}, that hydrological models should be viewed as a series of coupled hypotheses about the system as well as an overarching hypothesis about how different component relate to each other, is equally true of socio-hydrological modelling \citep{troy2015-a}. 
+
+%% about the correct combination of system components as well as the correct representation of individual system components, especially concerning the representation of behavioural responses to hydrological extremes \citep{troy2015-a,gober2015}.
+
+%% The fact that many hydrological models are released as closed source software packages is a fundamental impediment to scientific progress which limits the reproducibility of scientific results and forces modellers to duplicate the work of others \citep{morin2012,pebesma2012,steiniger2013,moulds2015}. Furthermore, current model implementations are frequently platform dependent, with many hydrological models only available for the Windows operating systems \citep{buytaert2008}. 
+
+%% Nevertheless, the overall trend in hydrological modelling is towards a more systematic, flexible approach to model development that facilitates hypothesis testing of model components and the inclusion of additional and alternative process representations. %% as our perceptual understanding of a system improve.
+
+\subsection{Modelling complex systems}
+
+%% paragraph 1: representing complex systems
+Representing complex systems in a single model structure is both challenging and undesirable \citep{beven2007}. Instead, model coupling has emerged as an effective way to build integrated environmental models \citep{goodall2011,bulatewicz2012,yue2014}. However, developing scientific workflows involving coupled models is challenging because different models are implemented in different programming langauges, built for different operating systems and accessed through different types of user interface \citep{buytaert2008,castronova2013,weiler2015,yue2015}. In recent years several tools have been developed to facilitate model coupling based on the notion of component-based frameworks \citet{argent2004}. These tools consist of model components with a standard interface to ensure that different components within the same framework interact correctly \citep{valcke2012}. The need for couplers was first addressed by the climate modelling community to couple separate components of earth system models, resulting in solutions including the Earth Systems Modeling Framework \citep{hill2004}, Ocean Atmosphere Sea Ice Soil (OASIS) \citep{}, and the Community Surface Dynamics Modeling System (CSDMS) \citep{}, which are designed to couple the core components of earth system models. There are few applications of these technologies to hydrological modelling, although \citet{shrestha2014} coupled a land surface model (NCAR Community Land Model version 3.5), a groundwater model (ParFlow) and an atmospheric model (Consortium for Small-Scale Modeling, COSMO \citep{}), using OASIS version 3.0 to create a fully integrated earth system model including groundwater dynamics, which most earth system models ignore \citep{maxwell2005}. Coupling technologies for earth system modelling result in tightly coupled applications in which the source code of the respective model components is ported to a single modelling application \citep{goodall2011}. This approach is computationally efficient and gives modellers the greatest amount of control over the way that processes are represented and data is exchanged in the coupled system \citep{goodall2011,buahin2015}. However, it lacks flexibility because it is difficult or impossible to integrate models that do not comply with specific requirements in terms of programming langauge and model structure \citep{goodall2011,salas2012}. \\
+
+%% paragraph 3
+One of the main goals of the Open Modeling Interface (OpenMI) is to promote interoperability between new and existing models \citep{moore2005,gregerson2007,goodall2011}. The coupling framework supports a loose-coupling approach in which model components adopt a standard interface allowing them to exchange data at run time \citep{moore2005}. This gives developers of model components greater freedom to implement model equations in the most efficient way possible, while developers of coupled system models have greater flexibility about the model structure \citep{goodall2011}. In principle, any combination of OpenMI-compliant models can be dynamically coupled \citep{gregerson2007}, although existing applications of the framework are mainly focused on hydrological modelling \citep{}. To adapt an existing model to the OpenMI standard it is necessary to represent the model as a C\# class implementing a set of defined operations \citep{}. This is relatively straightforward if the original model is written in a supported language (.NET, C\#) but considerably more challenging otherwise \citep{}. Another drawback of OpenMI is that it is designed primarily for Windows and support for other operating systems is variable. It has been ported to Linux using the Mono compiler although according to the project website it is only tested on one Linux distribution (OpenSUSE 11.0, 64-bit) and it is unclear whether the development cycle for the Linux version follows that of the main Windows version. Modelling the interactions and feedbacks in coupled human-water systems for sustainable water resources management requires `an integration of models across disciplinary boundaries' \citep{goodall2011}. This is a limitation of frameworks such as OpenMI which have been developed to serve a particular community. \\ 
+%% Some more drawbacks?
+%% Simple Script Wrapper?
+
+%% paragraph 4
+Existing coupling frameworks, including those designed for earth system modelling as well as OpenMI, require the source code of the original models to be substantially modified \citep{voinov2013}. This may be acceptable if the structure of the coupling application is known at the outset and involves a small number of model components. In practice, however, scientific workflows are refined iteratively and may change considerably as hypotheses are rejected and new ones are developed \citep{mcguire2007,dunn2008,fenicia2008,shao2009}. At the same time, given the substantial levels of epistemic uncertainty about the most appropriate model structure to represent hydrological and coupled human-water systems \citep[e.g.][]{dibaldassarre2015-a}, it is necessary to evaluate multiple models as working hypotheses about the functioning of the system \citep{clark2015}. Changing the source code of a large number of models is simply not practicable because it is time consuming, requires a high level of ability in various programming languages and techniques \citep{bulatewicz2012}, and may remove the models from the development cycle \citep{voinov2013}. \\
+
+%% paragraph 5
+The concept of the Model Web envisages `a dynamic web of models, integrated with databases and websites, to form a consultative infrastructure where researchers, managers and policy makers and the general public can go to gain insight into ``what if'' questions' \citep{bastin2013,geller2007}. It would enable the integration of resources, including data and models, to build coupled models of complex systems where components are loosely coupled over a distributed system of networked computers \citep{geller2007,goodall2011,bastin2013}. The Model Web is based on a service-oriented architecture in which models and databases are exposed as interoperable Web services \citep{castranova2013,nativi2013,schade2012}. Individual services within a network are regarded as black-boxes and may have no awareness of other services in the network \citep{barbosa2009}. Service orchestration is the coordination and arrangement of multiple services to execute a service-oriented workflow \citep{barbosa2009}. \citet{goodall2011} used the OpenMI Configuration Editor to orchestrate a simple rainfall-runoff model consisting of three components to calculate excess rainfall, incremental runoff and river routing using implementations of the Curve Number method, Unit Hydrograph method and Muskingham Routing method respectively. It was also used by \citet{goodall2013} to coordinate a two-way coupling between the Community Atmosphere Model, implemented within the Earth System Modeling Framework, and the OpenMI-compliant Soil Water Assessment Tool \citep{betrie2011}. The OpenMI Configuration Editor is associated with the disadvantages of OpenMI discussed previously, especially the fact that model components must be OpenMI-compliant. Furthermore it is a desktop application for Windows that would not be appropriate for server-based computing. \\
+
+%% paragraph 6
+Scripting langauges provide an alternative approach to service orchestration \citep{ousterhout1998,bu2015}. They are designed primarily for ``gluing'' together various functional components either written in the same language or in system programming languages such as C/C++ and Fortran \citep{ousterhout1998}, provide sophisticated methods for handling and processing data in various forms as well as high-level functionality for accessing Web resources \citep{bu2015}. The R environment for statistical computing \citep{R2015} is a free and open source implementation of the S language \citep{chambers2008}, which compiles and runs on a wide variety of Unix platforms, Windows and MacOS. One of the main strengths of R it its support for extension packages, which are distributed through the Comprehensive R Archive Network (CRAN) and other repositories \citep{pebesma2012}. In this paper we describe a new, experimental R package, RHydro, designed to facilitate the use of R as an orchestration engine for hydrological workflows. The R system is well suited for this purpose as it provides support for handling and manipulating the various data types and formats encountered in hydrology and other disciplines, including several classes for representing time and sophisticated methods for time series analysis as well as dedicated classes and methods for various types of spatial and spatio-temporal data \citep{pebesma2012}. Interfaces to the GDAL and OGR libraries ensures interoperability with most spatial raster and vector file formats and provides transformation between spatial reference systems through the PROJ.4 cartographic projections library. The ability to handle spatial and spatio-temporal data includes going from one representation to another (regridding, aggregation, disaggregation) as well as geostatistical interpolation and stochastic simulation \citep{pebesma2004}. It also contains low-level packages for parsing data from Web services such as \textbf{RCurl} and \textbf{SSOAP}, as well as high-level packages provide access to the CUAHSI WaterOneFlow family of Web services \citep{kadlec2015}, and the Consortium of Universities for the Advancement of Hydrologic Science (CUAHSI) controlled vocabulary \citep{horsburgh2009}. \\
+
+%% Consequently there has been little progress in hydrological modelling compared to disciplines such as ocean and climate modelling where model development is community driven \citep{weiler2015}.
+
+%% Recently, \citet{weiler2015} discussed the need for a community hydrological model to act as a focus for model development activities. \citet{wood2011} argue that the community should instead focus on developing the next generation of ``hyper-resolution'' land surface models as fully-functioning hydrological models. A similar argument was made by \citet{nazemi2015}, who called for water resources management activities to be incorporated with earth system models.
+
+%% \citep[e.g.][]{wood2011,nazemi2015,clark2015-a,weiler2015}.
+%% distributed, process-based hydrological models
+
+%% developers make different decisions about model fidelity, complexity and practicality (see \citet{clark2015} for definitions of these terms) as well as data availability,
+%% , with the aim of 
+
+%% For example, \citet{dibaldassarre2015-a} developed a socio-hydrological model consisting of five? partial differential equations to simulate the feedbacks between flood risk and society. \citet{garcia2016} produced a model that models feedbacks between water scarcity, water demand and population growth based on four differential equations.
+
+%% As \citet{blair2016} points out, the discipline of socio-hydrology has largely come about from researchers with backgrounds in water resources management and currently lacks input from the social sciences. Modelling complex systems also leads to decisions about the appropriate balance between simplicity and complexity required to achieve model parsimony, the perception of which varies substantially between individuals and communities \citep{}.
+%% , considering in particular ``green'' societies, which manage flood risk by moving outside flood plains, and technological societies, which handle flood risk by building structures intended to reduce the frequency of flooding events such as levees and dikes.
+
+%% 
+
+%% \citet{vanemmerik2014} modelled the interaction and feedbacks between water resources management and agricultural water use in the Murrumbidgee River basin in Australia, while 
+
+%% %% TODO: summary paragraph
+%% Hydrological modelling faces several important challenges. Substantial uncertainty about the best way to represent physical processes has led to a large number of hydrological models. At the same time hydrological modellers are increasingly asked questions concerning coupled human-water systems.
+
+%% While the first step has received considerable attention in recent years, particularly as a result of the IAHS Scientific Decade Predictions in Ungauged Basins \citep{sivapalan2003}, there has been relatively little progress in transferring... to hydrological models \citep{buytaert2008,gupta2012,hrachowitz2013,weiler2015}. One reason for this is the inability of current model e
+
+%% Where uncertainty estimation can be carried out under the constraints of a single, fixed model structure, it can also address the uncertainty in the particular choice of a model structure by considering multiple models as working hypotheses \citep{buytaert2011,clark2008,clark2011}. 
+
+%% Model coupling has emerged as an effective way to build integrated environmental models \citep{goodall2011,bulatewicz2012}. 
+%%  \\ % (\url{https://mgarcia.shinyapps.io/ReservoirOperations/})
+%% 
+
+%% Empirical models seek to characterise aspects of the behaviour of a catchment from observations of input and output variables \citep{wheater2002,pechlivanidis2011}, while conceptual models consist of simplified representations of the hydrological processes perceived to influence the system response \citep{wheater2002}. They include parameters that cannot be measured and, therefore, must be inferred from observations \citep{kavetski2006}. Process-based models are based on mathematical equations describing physical processes with parameter values that can, in principle, be measured \citep{montanari2012,beven2013-a}. [TODO: discussion of sources of epistemic uncertainty] ...has led to the development of numerous hydrological models \citep{clark2011,weiler2015}. 
+
+%% \subsection{Socio-hydrological modelling}
+
+%% Progress in scientific hydrology is further impeded by current modelling practice \citep{buytaert2008}. Efficient model development strongly depends on the availability of models as free and open source software \citep{morin2012,pebesma2012,steiniger2013,moulds2015}. The fact that many hydrological models are released as closed-source software packages is a fundamental impediment to scientific progress. Even if models are perfectly described it is impossible to guarantee the reproducibility of model results unless the implementation details, including the model source code, is freely available \citep{ince2012}. Moreover, it forces the duplication of work \citep{}. Current model implementations are frequently platform dependent, with many hydrological models only available for certain operating systems, often Windows \citep{buytaert2008}. This makes it harder to compare different models, particularly in the context of models as working hypotheses \citep{clark2011}. \\
+
+%% The fact that some models are released as closed-source software packages makes it virtually impossible to test component hypotheses \citep{ince2012}, while other models only work on specific operating systems. Considering all these factors it is often difficult to isolate specific process representations in different models so that hypotheses can be tested properly \citep{clark2011}. \\ 
+%% From the point of view of model development closed source software packages are effectively black boxes with no way of knowing model implementation details. 
+%% Where uncertainty estimation can be carried out under the constraints of a single, fixed model structure, it can also address the uncertainty in the particular choice of a model structure by considering multiple models as working hypotheses \citep{buytaert2011,clark2008,clark2011}.
+%% It is noteworthy that land surface models, increasingly used in hydrology despite considerable shortcomings \citep{beven2012,clark2015},
+
+%% discrete/continuous events?
+%% particularly under non-stationary conditions 
+%% discuss deterministic vs stochastic, spatially lumped vs. distributed
+%% see \citet{blair2016} and other reviews
+
+%% Uncertainty analysis is used to identify sources of error and uncertainty within a modelling application \citep{buytaert2008}. Various techniques are used, ranging from the Generalised Likelihood Uncertainty Estimation (GLUE) framework \citep{beven1992,liu2007}, based on the subjective assessment of whether a model is `behavioural' (consistent with observations) or `non-behavioural', to formal statistical frameworks in which uncertainty is treated as a probabilistic variable.\\
+
+%% Hydrological modelling is subject to a large amount of uncertainty from various sources. According to \citet{beven2013-a}, the two main types of uncertainty encountered in hydrology area aleatory uncertainty and epistemic uncertainty. Aleatory uncertainty arises from random variability present in the system and cannot be reduced by gaining additional knowledge or understanding \citep{koutsoyiannis2010,montanari2012,beven2013-a}. Epistemic uncertainty is the result of a lack of knowledge about the appropriate model structure and parameter set to adequately represent a hydrological system or about the input data and response data used to evaluate model performance \citep{beven2015}. 
+
+%% There has been much debate about the appropriate type of uncertainty analysis for different applications in hydrological modelling (see discussion in \citet{beven2006,beven2008,beven2012-c,beven2012-a,clark2011,clark2012,montanari2007}). However, regardless of the approach taken, there should be two main consequences of uncertainty analysis \citep{buytaert2008}. Firstly, it should identify processes and systems that are poorly understood and, consequently, drive the collection of new or more accurate data and the study of specific processes. This is fundamental to the view of modelling as a learning process \citep{juston2013}. Where uncertainty estimation can be carried out under the constraints of a single, fixed model structure, it can also address the uncertainty in the particular choice of a model structure by considering multiple models as working hypotheses \citep{buytaert2011,clark2008,clark2011}. 
+
+%% The second outcome should be to translate knowledge to the model software. While the first step has received considerable attention in recent years, particularly as a result of the PUB Scientific Decade \citep{sivapalan2003}, there has been relatively little progress in transferring these advances to hydrological models \citep{buytaert2008,gupta2012,hrachowitz2013,weiler2015}. \\
+
+%% The Darcy-Richards equation \citep{richards1931}, derived at laboratory scale under conditions that are not generally found in the field \citep{beven2012-b,beven2013}, is still widely used in process based hydrological models and land surface schemes to simulate unsaturated flow in soils \citep{beven2013}. As a result, process-based models must be calibrated to account for spatial heterogeneity, nonlinearity of hydrological processes and interaction between processes at various scales \citep{mcdonnell2007,gupta2012}. The various data streams now available to hydrologists provides the opportunity to explore gaps in knowledge and develop new hypotheses about hydrological processes and systems \cite{beven?}. For example, recent field scale experiments yielding isotopic data from various sites have led to new hypotheses about the partition of water in the critical zone between plant transpiration and groundwater recharge and streamflow \citep{brooks2010,evaristo2015}. Reviewing the main outcomes of the Predictions in Ungauged Basins Scientific Decade, \citet{hrachowitz2013} highlights the need to continue improving dialogue between experimentalists, modellers and theoreticians as a major challenge to the community. \\
+
+%% analysis of epistemic uncertainty, to the extent that it can be isolated, 
+%% The main criticism of GLUE is that it is based on a subjective assessment about what consistutes behavioural versus non-behavioural \citep{clark2011,montanari2012}. Meanwhile statistical frameworks ostensibly provide an objective measure of uncertainty but, according to \citep{beven2012}, they wrongly assume that all model uncertainty is aleatory, leading modellers to 'overestimate the information content of the model residuals' \citep{beven2012}. \\
+
+%% According to \citet{dibaldassarre2015}, epistemic uncertainty can further be divided into that which is known to be unknown, unknown to be unknown and wrongly assumed to be known. \\
+
+%% As \citet{beven2015} observes, there is considerable uncertainty about the appropriate type of uncertainty analysis for different applications. 
+
+%% \citep{beven1989}
+
+%% Still to discuss:
+%% FRAMES???
+%% SUPERFLEX \citet{fenicia2011}
+%% FARM \citet{euser2013}
+
+\section{Software design}
+The RHydro package implements a set of classes and methods designed to handle different types of data from hydrology and other disciplines and to form the basis of a common interface to hydrological models. The package is based on the S4 system for object-oriented programming \citep{chambers1998,chambers2008}. This system is better suited to complex data structures compared to the alternative and more informal S3 system because objects are validated against a formal class definition when they are created. This minimally ensures that each component, or ``slot'' in S4 terminology, has the correct class but also allows the imposition of additional validity criteria through a validity function included with the class definition. \\
+
+%% Object-oriented programming is based on the concepts of data abstraction, encapsulation, inheritance and polymorphism \citep{}. Encapsulation is the act of concealing the implementation of data in objects so that the user of the data does not need to be concerned with where, and in what form, the data is stored \citep{}. Data abstraction is the notion of reducing an object to its essential characteristics for a given application in order to reduce complexity and improve efficiency \citep{}. Inheritance allows new class definitions to include the properties of existing classes \citep{}. Polymorphism is the idea that a given method has different implementations for objects belonging to different classes. 
+
+%% http://codebetter.com/raymondlewallen/2005/07/19/4-major-principles-of-object-oriented-programming/
+
+%% In object-oriented programming, classes provide an abstract representation of a real-world object \citep{}. 
+\subsection{Classes}
+According to \citet{chambers1998}, `classes are the fundamental organising principle for data'. Hydrology studies the distribution and quality of water in space and time \citep{}. Thus, hydrological data has spatial and temporal characteristics. The class diagram for RHydro is shown by Figure~\ref{fig:classdiagram}. The RHydro package is built on three classes representing different space-time geometries: HydroSTF, HydroSTS and HydroSTI. These classes inherit from \textbf{spacetime} classes STF, STS and STI, respectively, which all derive from base class ST \citep{pebesma2012}. They include additional slots \texttt{z} and \texttt{endz}, analogous to \texttt{time} and \texttt{endTime} attributes in class ST, to define depth profiles. This is important for hydrological and meteorological variables measured and simulated at specific vertical levels above or below the earth's surface such as soil moisture and wind speed. Classes derived from HydroSTF, HydroSTS and HydroSTI include a \texttt{data} slot to represent data in various formats. Objects belonging to these classes should represent a single hydrological variable. An essential feature of the HydroST classes in the context of service orchestration is the inclusion of a slot \texttt{metadata} to provide a clear, unambiguous description of the data using entries from the CUAHSI controlled vocabulary \citep{horsburgh2013}. \\
+
+%% see caGrid \citep{saltz2006}
+
+\begin{figure}[t]
+  \includegraphics[width=12cm]{figs/f02_class_diagram_revised.pdf}
+  \caption{Class diagram in the Unified Modeling Language (UML) for \textbf{RHydro}, showing the main classes and methods included in the package.}
+  \label{fig:classdiagram}
+\end{figure}
+
+\begin{table*}[t]
+\caption{Methods included in the \textbf{RHydro} package}
+\begin{tabular}{ p{3.5cm} p{8.5cm} }
+%% \tophline
+\toprule
+Table           & Description \\
+\midrule
+VariableName    & TODO \\
+VerticalDatum   & TODO \\
+Speciation      & TODO \\
+SampleMedium    & TODO \\
+ValueType       & TODO \\
+DataType        & TODO \\
+GeneralCategory & TODO \\
+SampleType      & TODO \\
+CensorCode      & TODO \\
+TopicCategory   & TODO \\
+%% \bottomhline
+\bottomrule
+\end{tabular}
+\label{table:cvtables}
+%% \belowtable{}
+\end{table*}
+
+Class HydroSTF represents the geometry of data with a full space-time grid, which means that for \textit{n} spatial features, which may be points, lines, polygons or grid cells, and \textit{m} time points, $n*m$ data points are available \citep{pebesma2012}. Three derived classes of HydroSTF include data in different formats:
+
+\begin{description}
+  \item[HydroSTFDF] objects store data as a \texttt{data.frame} in long format with columns representing depth profiles. This contrasts with STFDF objects from \textbf{spacetime} where columns are assumed to refer to separate variables.
+  
+  \item[HydroSTF.raster] objects represent spatially gridded data stored as a RasterStack object from package \textbf{raster}. For a geometry with \textit{m} time points and \textit{p} depth profiles the RasterStack has $m*p$ layers with depth cycling fastest. The number of spatial features equals the number of cells in the RasterStack object.
+  
+  \item[HydroSTF.array] objects, which also represent spatially gridded data, store data an array with four dimensions (time, x, y, z).
+\end{description}
+
+Of these derived classes HydroSTFDF is the most flexible because it can represent the most spatial feature types (points, lines, polygons and pixels). A typical use of this class would be to represent precipitation data collected over regular time intervals by a network of rain gauges. Classes HydroSTF.raster and HydroSTF.array should be used to represent spatially gridded data products such as those derived from remotely sensed data or the output of distributed hydrological models. \\
+
+Class HydroSTS represents data on a sparse space-time grid. This is similar to a full space-time grid except only non-missing data is stored. In these objects, an index \textit{[i,j]} is associated with each data value giving the spatial feature \textit{i} and time point \textit{j} to which it belongs. This layout can be more efficient than a full space-time grid under various circumstances described by \citet{pebesma2012}. Data is included as a \texttt{data.frame} in the derived class HydroSTSDF. Data suited to this layout include the activation of flood defence systems or rainfall data in regions with extended dry spells. \\
+
+Where the first two classes represent lattice layouts, in which spatial features have data values for multiple time points, class HydroSTI represents an irregular layout in which there is no defined space-time grid. In this case the number of data points equals \textit{n} spatial features and \textit{m} time points such that a data value \textit{k} is associated with spatial feature \textit{k} and time point \textit{k}. Objects inheriting from HydroSTI therefore include a spatial feature and point for each data value. Hydrological data with an irregular space-time layout include the time and location of burst pipes in a water supply network. It can also be used when the structure of a data set is unknown and then promoted to HydroSTF if it meets the requirements of this class. \\
+
+%% There is a need to provide a common interface to the various data types and formats encountered in hydrology. 
+To avoid \textit{ad hoc} solutions to model coupling there should be an intuitive way to group various model inputs so that they can efficiently be transferred between services. A well-understood concept in hydrology is that of the catchment, ... We abstract this concept... The HydroCatchment is a container class for data and information covering a region of interest and forms the basis of a common interface to services within a service-oriented architecture. Slots \texttt{area} and \texttt{network} and \texttt{outlet} represent physical characteristics of a hydrological catchment. Data elements within HydroCatchment objects are objects deriving from HydroSTF, HydroSTS or HydroSTI classes and, therefore, include metadata entries from the CUAHSI controlled vocabulary. This enables service interfaces to receive a single HydroCatchment object, extract data from the object using accessor (getter) functions, send it to the service in the required format, parse the output data from the service, update the HydroCatchment object using mutator (setter) functions and, finally, return the updated object to the workflow. \\
+
+\subsection{Methods} %% TODO: Table showing methods
+Methods for the RHydro data classes are shown in Table~\ref{table:methods}. Several methods are written for generic functions defined in other packages or base R for manipulating spatial, temporal or spatiotemporal data. In the following examples we use simple, artificial data objects to illustrate the key methods defined in the package. \\
+
+\begin{table*}[t]
+\caption{Methods included in the \textbf{RHydro} package}
+\begin{tabular}{ p{3.5cm} p{8.5cm} }
+%% \tophline
+\toprule
+Function name & Description \\
+\midrule
+crs           & Coordinate reference system \\
+diff          & Time difference \\
+dim           & Dimensions \\
+extent        & Spatial extent \\
+gridded       & Test whether an object is spatially gridded \\
+metadata      & Get or set object metadata \\
+names         & Get or set object name \\
+units         & Get variable units \\
+%% \bottomhline
+\bottomrule
+\end{tabular}
+\label{table:methods}
+%% \belowtable{}
+\end{table*}
+
+\subsubsection{Creation}
+Constructor functions HydroSTF, HydroSTI and HydroSTS create objects belonging to the respective classes. The class of the data argument, if provided, determines the derived class of the returned object. For example, if data is a RasterStack object, the constructor function will return an object of class HydroSTF.raster. Object metadata is provided as a named list where names correspond to the names of the CUAHSI controlled vocabulary tables shown in Table~\ref{}. It is not necessary to provide object metadata but if metadata entries are supplied they are validated against the CUAHSI controlled vocabulary if the tables are available in the current R session. Otherwise they are not validated and a warning is supplied. The controlled vocabulary tables can be downloaded from the CUAHSI WaterOneFlow Web service using functionality from package RObsDat, as follows:
+
+<<echo=FALSE,results="hide">>=
+devtools::load_all("/home/simon/projects/r_hydro/Hydro2", quiet=TRUE)
+@ 
+
+<<echo=TRUE,results="hide">>=
+library(RObsDat)
+library(RSQLite)
+library(SSOAP)
+con <- dbConnect(dbDriver("SQLite"), dbname = "RODM.db")
+sqhandler <- new("odm1_1Ver", con=con)
+options(odm.handler=sqhandler)
+updateCV()
+@
+
+\noindent Now the most recent version of the CUAHSI controlled vocabulary is available in the current session. Package RObsDat includes various helper functions to navigate the controlled vocabulary tables. For example, the tables can be searched:
+
+<<echo=TRUE>>=
+getMetadata("VariableName", Term="Discharge")
+@ 
+
+\noindent In addition, it allows users to add terms to controlled vocabulary tables:
+
+<<echo=TRUE,tidy=TRUE>>=
+addCV("VariableName", term="test", definition="test entry")
+@ 
+
+\noindent However, as the resulting warning message implies, this facility should be treated with caution because the term is only added to the local copy of the controlled vocabulary. Thus, when the table is updated from the WaterOneFlow Web service any locally added terms will be overwritten. \\ 
+
+In the following toy example we create objects objects \texttt{x} and \texttt{y} with classes \texttt{HydroSTFDF} and \texttt{HydroSTF.raster}, respectively. First, we create the space and time geometries and generate some arbitrary data drawn from a random uniform distribution:
+
+<<echo=TRUE>>=
+sp <- SpatialPoints(data.frame(x=1:5, y=1:5))
+t <- seq(as.POSIXct("2000-01-01", tz="GMT"), by="1 hour", length.out=24)
+dat <- data.frame(runif(n=120))
+@ 
+
+\noindent Now, we create an object of class HydroSTFDF:
+
+<<echo=TRUE>>=
+x <- HydroSTF(STFDF(sp=sp, time=t, data=dat), 
+              metadata=list(VariableName="Discharge",
+                            VariableUnitsID=52,
+                            ValueType="Field Observation",
+                            DataType="Cumulative"))
+x
+@ 
+
+\noindent To create an object of class HydroSTF.raster we generate a RasterStack object and pass this to the constructor function, using the same time series as before:
+
+<<echo=TRUE>>=
+dat <- brick(x=array(data=runif(2400), dim=c(10,10,24)))
+y <- HydroSTF(time=t, data=dat,
+              metadata=list(VariableName="Precipitation",
+                            VariableUnitsID=52,
+                            ValueType="Field Observation",
+                            DataType="Cumulative"))
+@ 
+
+\noindent Note that in this case we do not need to supply a Spatial object to the constructor function because this information is derived internally from the RasterStack object. \\
+
+The HydroCatchment class is designed to contain several data objects for a given place. To allow for the fact that providing information for area, network and outlet slots is not always necessary, a simple dummy object is included with the package. In the following example we load this object and update it with the HydroSTFDF and HydroSTF.raster objects created previously:
+
+<<echo=TRUE>>=
+data(hc)
+hc <- update(hc, data=list(x, y))
+names(hc)
+@ 
+
+%% \subsection{Querying}
+%% Various methods allow the user to query the spatial and temporal characteristics of Hydro objects. Some of these are shown below:
+
+\subsubsection{Coercion}
+Coercion methods for objects belonging to HydroSTF, HydroSTS and HydroSTI classes make it easier to take advantage of methods defined for objects of different classes. Objects of class HydroSTF.raster and HydroSTF.array can always be coerced to HydroSTFDF objects, however, the reverse operation is only possible if the HydroSTFDF object is gridded. In the following example we coerce the HydroSTF.raster object created previously to an object of class HydroSTF.array:
+
+<<echo=TRUE>>=
+y1 <- as(y, "HydroSTF.array")
+class(y1)
+@ 
+
+\noindent Next, we coerce the HydroSTF.array object back to HydroSTF.raster and compare the result with the original HydroSTF.raster object:
+
+<<echo=TRUE>>=
+y2 <- as(y1, "HydroSTF.raster")
+compare(y1, y2)
+@ 
+
+\noindent The function \texttt{as.spacetime} converts objects inheriting from HydroSTF, HydroSTS, HydroSTI to their nearest equivalent \textbf{spacetime} classes. Then, the coercion methods of package \textbf{spacetime}, described in \citet{pebesma2012}, can be applied. For example:
+
+<<echo=TRUE>>=
+y1 <- as.spacetime(y)
+class(y1)
+y2 <- as(y1, "xts")
+class(y2)
+@ 
+
+\subsubsection{Indexing}
+Indexing allows users to extract or replace subsets of HydroST objects. Methods for HydroSTFDF, HydroSTSDF and HydroSTIDF objects closely follow those for the corresponding \textbf{spacetime} classes described by \citet{pebesma2012}. Individual raster objects can be extracted from HydroSTF.raster objects using double brackets, as follows:
+
+<<echo=TRUE>>=
+y[[1]]
+y[[1:5]]
+@ 
+
+Index methods for HydroCatchment objects are designed to extract or replace objects held in the data slot. The index can be either be numeric or, if the objects have metadata entries, a character vector of variable names to be selected. Double brackets are used to select a single data object whereas single brackets can select one or more objects, returning a HydroCatchment object containing only the selected data:
+
+<<echo=TRUE>>=
+x1 <- hc[[1]]
+class(x1)
+y1 <- hc[["Discharge"]]
+compare(x1, y1)
+class(hc[1])
+class(hc[1, drop=TRUE])
+@ 
+
+%% \subsubsection{Arithmetic and mathematical functions}
+%% Arithmetic and mathematical methods for HydroST objects allow them to be used in calculations. A full list of supported operations is provided in the package documentation. Objects of the same derived class can be supplied to arithmetic operators if they have the same spatial and temporal characteristics. For example:
+
+%% %% TODO
+
+%% \noindent Numeric, Spatial and time-based objects can also be supplied. \\
+
+\subsubsection{Aggregation and resampling}
+For objects of classes HydroSTFDF, HydroSTIDF and HydroSTSDF spatial and temporal aggregation and overlay methods are thin wrappers to the methods for objects of corresponding \textbf{spacetime} classes described in \citet{pebesma2012}. Gridded HydroSTF objects can additionally be spatially aggregated to a lower resolution or resampled... by taking advantage of the \texttt{aggregate} and \texttt{resample} methods of package \textbf{raster}. To achieve this, gridded HydroSTFDF and HydroSTF.array objects are coerced to HydroSTF.raster objects, aggregated, and coerced back again. Some examples of aggregation are shown here: \\
+
+<<echo=TRUE>>=
+y1 <- aggregate(y, fact=2, FUN=mean)
+dim(y1)
+y2 <- aggregate(y, fact=5, FUN=mean)
+dim(y2)
+@ 
+
+\noindent In the next example we create a new raster object with the same spatial extent as the HydroSTF.raster object created earlier but a different spatial resolution, and use this as the basis for resampling the HydroSTF.raster object:
+
+<<echo=TRUE>>=
+r <- raster(matrix(data=NA, nrow=6, ncol=6))
+y1 <- resample(y, r, method="bilinear")
+geometry(y1)
+@ 
+
+%% \subsection{Visualisation}
+%% Visualisation is an important tool in hydrological data analysis, ... \\
+
+\section{Example applications}
+
+In this section we present two example applications of the RHydro framework. In the first case we show how RHydro facilitates the use of Topmodel \citep{beven1979}, a well known hydrological model, to simulate discharge in the Wye catchment in mid-Wales. The example serves to demonstrate the use of RHydro in hydrological modelling workflows. In the second example we use the socio-hydrological model developed by \citep{garcia2016} to show the value of RHydro to socio-hydrological modelling.
+
+\subsection{Plynlimon}
+The Plynlimon research catchments... The original data set was obtained from the Centre for Ecology and Hydrology. A package vignette shows how to download the raw data files from \url{https://github.com} and create a single STFDF object containing observed meteorological data from a network of automatic weather stations. Having created such an object, a version of which is included with the package, it is straightforward to create HydroST objects representing individual variables, as shown in Figure Y. If the CUAHSI controlled vocabulary is made available by implementing the code in Figure X the validity of the metadata entries for the HydroST objects is checked automatically: invalid entries result in an error. \\
+
+\subsubsection{Evapotranspiration}
+Topmodel requires reference evapotranspiration for each time point in the simulation \citep{}. Associating each data object with metadata entries from a controlled vocabulary allows users to write functions that checks the data object contains the correct variable. %% In addition, it means that a single function can automatically follow different methods to achieve the same outcome depending on the variables contained in an object of class HydroCatchment.
+To illustrate how this can be done in practice we have developed an experimental package \textbf{FAO56} which implements several equations from the Food and Agricultural Organisation (FAO) Irrigation and drainage paper 56 \citep{allen1998}. This document provides guidelines for computing crop water requirements using the Penman Monteith combination equation. Reference evapotranspiration... Equation 6 can be written:
+
+\begin{equation}
+%% TODO: equation
+\end{equation}
+
+\noindent where... In many situations... For this reason the FAO56 contains a number of methods to compute missing variables from... The method for HydroCatchment objects makes an assessment of the variables available and, for each input variable, whether it is available or if it needs to be calculated. If the latter, a method is chosen following the preferences described in paper 56. 
+
+%% \subsection{Topmodel}
+%% Topmodel is a semi-distributed hydrological model, originally developed by \citet{beven1979} and described extensively elsewhere \citep[e.g.][]{}, that partitions rainfall into overland flow, unsaturated zone recharge and saturated zone flow \citep{lane2004}. The R package \textbf{topmodel} \citep{} provides a convenient wrapper for the original Fortran code. ...To illustrate the procedure of creating... procedure we have defined a subclass HM.topmodel to represent Topmodel, as shown in Figure X. \\
+
+%% TODO: draw UML diagram illustrating class HM.topmodel
+
+\subsection{Reservoir operation}
+Reservoir operation is a classic problem... Here, we adapt the example of \citep{garcia2016} to the RHydro framework. \\
+
+\section{Discussion}
+
+%% The following paragraph from /home/simon/r_hydro_info/blueprint.pdf (TODO: references)
+Hydrological modelling and data analysis must increasingly handle large, complex data sets. To facilitate workflows... we have designed and implemented a set of classes and methods... The examples show some potential applications of the package. Hydrological science faces a number of key challenges around code availability, reproducibility of scientific results... Addressing the challenges in scientific hydrology requires integration of information from diverse sources, ``is data and computationally intensive" and collaboration between researchers across disciplines \url{https://irods.org/wp-content/uploads/2015/06/Tarboton-HydroShare.pdf}. [...] We argue that \textbf{RHydro} should be viewed as a first step towards tackling these issues. \\
+
+Various solutions have been proposed, including the development of a community hydrological model \citep{weiler2015}. \\
+WaterML is an XML dialect for representing hydrological time series data \citep{}. The current version, WaterML 2.0, is an open standard of the Open Geospatial Consortium (OGC) \citep{}. An R package, \textbf{WaterML}, allows R users to interact with the CUAHSI... \\
+
+Over time, alternative approaches will be developed and the community will converge on the most efficient solution. In all likelihood it will not resemble RHydro but this does not detract from its potential  
+
+Realising the Model Web is highly ambitious and will rely on bottom-up, community driven progress \citep{}. According to \citet{nativi2013} the Model Web is based on four main principles: `open access, minimal barriers to entry, service driven and scalability'. Any solution meeting these... is a step towards... \citet{nativi2013} \\
+
+Currently RHydro implements the CUAHSI ontology. The example of the reservoir operations model demonstrates the limitations of this approach because, as a system originating from the hydrological sciences, it does not support many terms that might be encountered in other disciplines. It is possible to suggest new entries to the ontology but it is unclear whether there is support for extending the scope of the ontology. Furthermore, given the range of problems encountered, particularly in socio-hydrology, it is unlikely that a single ontology will contain all the relevant terms all of the time. \\
+
+The Model Web would make it easier to discover, access and use models and data \citep{schade2012}, improving the reproducibility of scientific results and making models and data, including uncertainty estimation, available to decision-makers \citep{nativi2013}.
+
+The example application of RHydro to the reservoir operations model can be seen as an implementation of the Model Web without web services. The next stage of development of RHydro is to develop models as web services... There remain considerable difficulties with developing model encapsulations for web services, as discussed by \citet{yue2015}. \\
+
+One of the main goals in science is the exchange of ideas. Mathematical equations are used to communicate the structure of theories, computer code needs to be communicated to show how these theories were applied \citep{buytaert2008}. At best, this is done at a relatively high level language that is compact and widely used. An open, free software environment such as R provides the means to communicate the latter, efficiently. Teaching how we develop, implement, combine, run and verify models is equally served by a free environment that offers much functionality and high-level language constructs. \\
+%% end
+
+Adopting a new, flexible approach to model coupling allows the interoperability of models across disciplines to be prioritised from the beginning \citep{goodall2011}. 
+
+it is impossible to guarantee the reproducibility of model results unless the implementation details, including the model source code, is freely available \citep{ince2012}. Moreover, it forces the duplication of work \citep{}. C
+Efficient model development strongly depends on the availability of models as free and open source software
+
+The example use cases for Plynlimon and ... demonstrate the potential of RHydro. However, there remains much work to be done in order to realize the Model Web for hydrology. First, there needs to be... Cloud computing is the use of computer hardware and software delivered as a service over the Internet to store, manage and process data \citep{}. This enables the efficient utilisation of computer infrastructure by multiple users and removes the need to install and maintain various software components locally \citep{burger2012}. ``the complexity of most environmental models typically confines them to scientific laboratories and academic computer clusters..." \citep{buytaert2012}. %% Well known cloud-based services include the suite of Google products... Google's Earth Engine, which ..., has been used to... 
+Providing models as web services with accessible user interfaces reduces the gap between science and policy makers. Cloud computing will be important to ensure community engagement and participation with the development of so called ``hyper-resolution" models because the computing power required for such models will exceed that provided by desktop computers. \\
+
+As the principles of socio-hydrology are directed towards global and regional problems, as envisaged by \citep{lall2014}, model complexity will increase.
+
+The Model Web, as proposed by \citet{geller2007}, is a vision for a system of interoperable models and data available through the Internet as web services. In this vision model inputs could be outputs from other models or they may be observed or measured values received in real time from sensors (which may also be considered a model output \citep{geller2007,pebesma2010,beven2012}) or from databases. Loosely coupled models interacting through web services has several advantages over tightly coupled models that lack flexibility and often require substantial modification of model source code  \citep{bulatewicz2012,lu2012} (model removed from development cycle) The implementation of the Model Web for hydrology would facilitate a system ``in which modelling methods, databases, observations and uncertainty estimation are integrated seamlessly...", such as that envisaged by \citet{beven2007}. Furthermore, scientific research carried out using the Model Web would be accessible and fully reproducible \citep{bastin2013}. The UncertWeb project \url{http://www.uncertweb.org/} explored how to manage uncertainty in instances of the Model Web \citep{bastin2013}. HydroShare is a collaborative environment for data sharing, analysis and modelling currently under development by CUAHSI... It will be exposed as a web-service. In many ways the R system may be thought of as an implementation of the Model Web without the use of web services, because... % From /home/simon/r_hydro_info/RHydro_new.pdf\\
+
+The aim of the current IAHS Scientific Decade \citep[Panta Rhei-Everything Flows][]{montanari2013} is to improve the predictive capacity of hydrological models for sustainable water resources management in the context of rapid environmental and social change. This requires scientific workflows that include human-environment interactions \citep{laniak2013,nazemi2015,wheater2015}. Representing complex systems in a single model structure is both challenging and undesirable \citep{}. Integrated environmental modelling is an approach where several models representing... are linked in order to provide a coherent representation of a system. %% Earth system models consist of tightly coupled model components representing atmosphere, oceans, land and sea ice \citep{valcke2012}. However, 
+In water resources management there is a need for a flexible approach to model coupling because of the diverse range of problems encountered \citep{}. The lack of a common interface amongst hydrological models... \\
+
+\citet{pebesma2012} highlights a number of areas where the \textbf{spacetime} package could be improved. The \textbf{RHydro} package has provided solutions to some o these limitations. For example, it shows how \textbf{raster} classes can be represented... It support of the CUAHSI controlled vocabulary... albeit in the hydrological sciences only. There remain a number of areas... \\
+
+A lack of data means that models are untested across a broad range of catchments and... One solution to the lack of data is leveraging the 'Internet of things' to improve monitoring networks \citep{buytaert2014}.
+
+Future work on RHydro will focus on identifying use cases and applications to further refine its functionality. Particular focus will be given to modelling human-environment interactions through model coupling. \\
+
+ %% This makes it harder to compare different models, particularly in the context of models as working hypotheses \citep{clark2011}. \\
+
+%% Points for discussion:
+
+%% \begin{itemize}
+%% \item The RHydro package could be used as the basis for a new community hydrological model of the type called for by \citep{weiler2015}
+%% \item How can users contribute to RHydro development? Mention need for models and data as web services
+%% \item Data heterogeneity: heterogeneity of meaning and heterogeneity of format
+%% \end{itemize}
+
+\section{Conclusion}
+
+The main contribution of RHydro [...] \\
+
+% not used:
+
+%% \subsubsection{Controlled vocabulary}
+%% A controlled vocabulary is a collection of words and phrases that is used to describe information and data in a consistent way \citep{horsburgh2008}. Each term in a controlled vocabulary has a single, unambiguous meaning \citep{horsburgh2008}. In hydrology, the controlled vocabulary of the Consortium of Universities for the Advancement of Hydrologic Science (CUAHSI) is part of its Hydrologic Information System (HIS) ... WaterML... 
+%% Package \textbf{RObsDat} \citep{} provides a convenient interface to the CUAHSI Web services. It was designed to The following code snippet shows how to make the CUAHSI controlled vocabulary available within the current R session and update the various tables from the CUAHSI Web service. The \texttt{getMetadata()} function in \textbf{RObsDat} allows users to search for particular terms in the controlled vocabulary tables.  \\
+
+%% Semantic heterogeneity impedes the discovery, retrieval, integration and exchange of data and information \citep{}.
+
+%% According to \citet{nativi2013}, `a clear information model is essential for accommodating the different resources published in the Model Web'.
+
+%% However, while R includes many of the tools for handling hydrological data, there is a need to explore ways of including semantic information... \citep{geller2014}. 
+
+%% Ontologies are an essential aspect of the Model Web because resources in the network must be able to act upon data objects without human interference. \\
+
+%% ... an ontology is `a representation of the knowledge within a domain of interest' \citep{madin2007}, to describe and synthesize data elements from diverse sources \citep{shadbolt2006}. 
+
+%% These classes and methods will enable... R to be used as the orchestration engine within a service-oriented architecture. Initially, services will be functional wrappers to hydrological models. In the future, these services will be Web services coupled over a distributed network. \\
+%% In the long-term, we envisage that data may be stored over a distributed system... Methods should provide... As well as representing individual data objects, representing specific hydrological variables, we intend to provide a class for catchments which allows data, parameters... 
+%% The first design goal of RHydro is to provide classes and methods to facilitate hydrological modelling and data analysis.
+%% \textit{abstraction} and \textit{encapsulation}. We want to represent the microarray concept in a way that makes sense to the users without distracting them with unnecessary technicalities... We want the users to comprehend microarrays in R like they know them in real life i.e. manipulate the abstract concept microarray while keeping all the underlying technical details, the implementation, hidden, or encapsulated''
+%% The RHydro package follows an object-oriented design using the S4 system \citep{chambers2008}. This system provides... It is strongly inspired by the \textbf{spacetime} package \citep{pebesma2012}. \\
+%% Our aim is to encapsulate spatial, temporal and spatio-temporal hydrological data in a way that means users of RHydro are not unnecessarily concerned with technical details about how or where data is stored. We buil
+
+%% Table X lists some high-level packages for retrieving meteorological and hydrological data from the web. \\ %% include WaterML
+
+%% \begin{sidewaystable}[ph!]
+%% \caption{R packages for hydrological modelling and data analysis.}
+%% \centering
+%% \begin{tabular}{ l l l }
+%% %% \tophline
+%% \hline
+%% Package & URL & Description \\
+%% %% \middlehline
+%% \hline
+%% HydroGOF           & Goodness-of-fit measures for calibration and validation of hydrological models & \\
+%% HydroTSM           & Tools for hydrological time series analysis & \\
+%% Hydrosanity        & & \\
+%% RMWAGEN            & & \\
+%% Evapotranspiration & & \\
+%% topmodel           & & \\
+%% dynatopmodel       & & \\
+%% Wasim              & & \\
+%% TUWmodel           & & \\
+%% SWATmodel          & & \\
+%% %% \bottomhline
+%% \hline
+%% \end{tabular}
+%% \label{table:packages}
+%% %% \belowtable{}
+%% \end{sidewaystable}
+
+%% Several hydrological models have been implemented as R packages, including Topmodel, Dynamic Topmodel \citep{metcalfe2015}, the HBV model and the Soil and Water Assessment Tool (SWAT).
+%% Low-level packages for spatial, temporal and spatio-temporal data analysis and manipulation form the basis of high-level packages for hydrological modelling and data management. 
+%% It offers a wide range of low-level to high-level plotting facilities that can be sent to various graphics devices or dynamic Web interfaces \citep{gesmann2011}. \\
+
+%% \subsection{Summary and design goals}
+
+%% Hydrological models are represented by the HM class. The HM class provides an entry point for users and developers to define methods for hydrological models. The procedure is to define a subclass of HM that is specific to the model or process in question. This should include a validity function to ensure the object contains the correct data content and format. Individual models should be represented by derived classes inheriting from class HM. It is included solely for the purpose of providing users and developers with a class to extend to represent individual models. \\
+
+%% %% summary of literature review
+%% There is a strong need to improve the representation of physical processes in hydrological models \citep{beven2012}. Individual models should be viewed as a set of coupled hypotheses about the functioning of the hydrological system \citep{clark2011}. Isolating coupled hypotheses should make it easier to identify sources of epistemic uncertainty \citep{}; however, it is difficult to compare hypotheses in different model structures because the implementation of the current generation of hydrological models varies so widely \citep{}. Furthermore, it is still the case that representations of many physical processes in models are contradicted by field experiments \citep[e.g.][]{mcdonnell2007}. Meanwhile the emerging discipline of socio-hydrology addresses complex problems involving coupled systems \citep{sivapalan2013}. According to \citet{salas2012}, a framework for model coupling 'should support modularity, flexibility and interoperability'. Individual model components should be independent in terms of development and implementation and they should be able to function autonomously as well as within the coupling framework. Component-based modelling facilitates model development by clearly separating coupled hypotheses and allowing improvements to made to one part of the model without needing to change other parts \citep{kelly2013,clark2015-b,blair2016}. However, there are substantial drawbacks to existing frameworks for model coupling, including the fact that they require the source code to be modified as well as platform dependency. \\
+
+%% %% Model Web
+%% The vision of the Model Web builds on the concept of component-based modelling by allowing individual components to be connected over a network following a service-oriented architecture \citep{geller2007}. Model components are exposed as Web services and may have no awareness of other services in the network. Service orchestration is a key aspect of service-oriented architectures... 
+
+%% In this context we propose RHydro as an orchestration engine for service-oriented... The R system is an attractive platform to develop such an implementation for various reasons. Since it already supports a wide range of data types we do not need to spend time developing solutions for the wide range of data types and formats encountered in hydrology. There is an active community of hydrologists and socio-hydrologists using R \citep{}, ensuring a large potential user base and lowering the barriers to entry. The fact that several hydrological models are already available as contributed packages (e.g. Topmodel, HBV) or scripts (e.g. \citet{garcia2016} means it is an ideal environment in which to test ideas and functionality. \\
+
+%% Thus, as \citet{nativi2013} argues, any approach following these general concepts helps to move the modelling community towards the long-term vision. 
+%% Models encapsulate knowledge and modelling itself is a learning process \citep{box1976}. 
+%% In this context, we propose RHydro as a model of the Model Web that provides a means to explore potential issues and challenges that may be encountered as the long-term vision is realised. In doing so, we aim to provide a tool that is useful for hydrological modelling and data analysis, particularly model coupling. \\
+
+%% Rather, we aim to provide classes and methods that can be used as the basis of a common interface for new and existing models and provide a means to improve the interoperability of existing packages for hydrological data analysis.
+
+%% Finally, R provides functionality for high-performance and parallel computing with convenient interfaces to run R process on Hadoop clusters and Amazon Web Services, for example. 
+%% (screen, file formats)
+%% In addition, R offers topological manipulation of geometries \citep{rundel2012}, as well as analysis of network data \citep{csardi2006}. 
+%% It also contains packages for parsing data from the web such as \textbf{RCurl} and \textbf{SSOAP}. \\
+%% which compiles and runs on a wide variety of Unix platforms, Windows and MacOS \citep{pebesma2012}.
+
+%% Several packages for retrieving and processing hydrological data from Web services have emerged: \textbf{hddtools} allows users to download and process data from sources such as the Global Runoff Data Centre, Met Office Hadley Centre Observation Data and NASA's Tropical Rainfall Measuring Mission, 
+
+%% One interesting package is \textbf{hydromad} \citep{andrews2013}, which provides a set of functions to construct and compare conceptual, lumped hydrological models including various interchangeable routines for soil moisture accounting and flow routing. This can be seen as a way of exploring model structural uncertainty, albeit using simple conceptual models rather than process-based models. 
+
+%% Through these packages, R includes several classes for representing time and sophisticated methods for time series analysis through contributed packages such as \textbf{zoo} and \textbf{xts}. The \textbf{sp} package provides dedicated classes and methods for representing different types of spatial data including points, lines, polygons and pixels. Packages exist for analyzing spatial data \citep{bivand2013} and spatio-temporal data \citep{pebesma2012}. The ability to handle spatial and spatio-temporal data includes going from one representation to another (regridding, aggregation, disaggregation), but also geostatistical interpolation and stochastic simulation \citep{pebesma2004}. Package \textbf{rgdal} \citep{bivand2014}, which provides an interface to the GDAL and OGR libraries, ensures interoperability with most spatial raster and vector file formats and provides transformation between spatial reference systems through the PROJ.4 cartographic projections library \citep{}. Package \textbf{raster} \citep{hijmans2014} provides classes and methods for analysing raster data. In addition, R offers topological manipulation of geometries \citep{rundel2012}, as well as analysis of network data \citep{csardi2006}. R provides functionality for high-performance and parallel computing with, for instance, convenient interfaces to run R process on Hadoop clusters. Running R on Amazon Web Services is also straightforward \citep{}. It offers a wide range of low-level to high-level plotting facilities that can be sent to various graphics devices (screen, file formats) or dynamic web interfaces \citep{gesmann2011}. It also contains packages for parsing data from the web such as \textbf{RCurl} and \textbf{SSOAP}. \\
+%% which compiles and runs on a wide variety of Unix platforms, Windows and MacOS \citep{pebesma2012}.
+%% The development of R is strongly established in the areas of statistical software and data analysis \citep{chambers2008}. 
+%% Moreover, a lack of convergence on a community hydrological model has resulted in numerous hydrological models that are written in different programming languages, built for different operating systems and accessed through different types of user interface \citep{buytaert2008,weiler2015,yue2015}. \\
+
+%% More recently, \citet{goodall2014} used an \textit{ad hoc} orchestration engine to simulate integrated urban infrastructure systems by coupling models of water, transportation and structures exposed as Web services. 
+
+%% The object-oriented nature of data-processing languages makes them an efficient means to couple models and data \citep{ousterhout1998}. \\
+
+%% Service-oriented computing is an essential concept of distributed computing `where the Internet is used not only for delivering information from machines to humans, but also between machines themselves' \citep{huhns2005}. \\
+%% The component implementing the Muskingham Routing method was a Web service while the other two components were local services \citep{goodall2011}. 
+%%  
+%% For example, \citet{goodall2013} coupled a regional climate model with the Soil Water Assessment Tool using Web services, demonstrating the potential for service-oriented architectures to integrate water resources management activities with earth system models, called for by \citep{nazemi2015}. 
+
+%% It enables a form of component-based modelling where communication between system components is done over a network rather than locally \citep{huhns2005,goodall2011}.   
+%% Models and databases are encapsulated, or wrapped, using a common interface, avoiding the need to modify the source code of the original components \citep{}.
+
+%% Service-oriented architectures hold great promise for water resources management because of the diverse range of problems encountered as well as the epistemic uncertainty about the appropriate model structure to represent a system.
+
+%% (\url{https://cran.r-project.org/web/views/WebTechnologies.html}).
+%% In some cases the original model code has been wrapped in a relatively high-level language such as R and Python. 
+%% A package for the transfer of  available as an R package allowing hydrological data discovery and sharing from the R console. These packages typically perform a certain part of hydrological workflows. 
+%% For example, both Topmodel and Dynamic Topmodel are available as R packages. This provides a more user-friendly model interface and makes it easier to handle input/output and visualise model results. \\
+
+%% \subsection{Summary}
+%% TODO
+
+%% Shiny apps are valuable to improve accessibility to scientific results and... [\citep{garcia2016}]
+
+%% The problem is compounded by the fact that the source code of many hydrological models is not available, making it difficult to understand decisions made by different modelers... \\
+
+%% This has partly arisen because hydrological models are developed in isolation and lack a common interface [...] efforts such as the Framework for Understanding Structural Errors (FUSE) \citep{clark2008}.
+
+%% Despite considerable advances in fields such as weather forecasting and ocean modelling there has been little progress in distributed, physics-based hydrological models \citep{beven2001,buytaert2008}. 
+%% Models such as... 
+
+%% %% model development as a consequence of uncertainty analysis
+%%  Current models are usually written in programming languages such as C and Fortran. The fact that some of the most widely used models, especially amongst the research community, are those with open-source implementations suggests that ease of use and accessibility is a major consideration for hydrologists. 
+
+%% Meanwhile land surface schemes, originally developed to provide the lower boundary condition for climate models, are increasingly used for hydrological modelling at regional, continental and global scales \citep[e.g.][]{nazemi2015}. With increasing computing power there is a drive for so called hyperresolution models (spatial resolution of the order of 1km or less) that resolve fluxes at finer spatial scales \citep[e.g.][]{wood2011}. Earth system models are used for water resources management... However, as \citet{beven2015} argues, even at spatial resolutions higher than those proposed by \citet{wood2011} there will be considerable subgrid heteregeneities that are not properly resolved. Furthermore, there are many aspects of the hydrological cycle that are not captured by earth system models, particularly concerning human intervention to the hydrological cycle. Irrigation... \citep{nazemi2014}. In many places the arbitrary distinction between groundwater and surfacewater... \citep{}. 
+
+%% We suggest that the increasing popularity of earth system models for hydrological modelling is due in large part to the fact that these models are usually open-source and freely available with community support. While \citet{beven?} is highly critical of the use of these models for hydrological modelling, in many cases their use is borne out of the fact that many specialised distributed hydrological models are not fit for purpose. Selecting an appropriate model for a specific task usually requires some iteration: if models are not freely available they are usually excluded. In a more recent paper, \citet{beven2015?} argue for the adoption of a community hydrological model... This is the status of many land surface schemes... 
+
+%% Models frequently rely on equations that have parameters that cannot be measured directly, either because they do not represent physical quantities or because the physical quantity they represent is difficult to observe \citep{}. Empirical and conceptual models are calibrated by manually or automatically selecting values such that the model output matches a measured variable to the extent required for the specific application. 
+
+%% [see review of previous attempts in \citep{mendoza2014}] \\
+
+%% To overcome this limitation, it must be more straightforward to isolate individual process representations in different models so that hypotheses can be properly tested \citep{clark2011}. 
+
+%% Although there is some debate about the most appropriate way to test models as hypotheses (see debate in \citet{beven2012-c} and \citet{clark2012}, for example),
+
+%% Initial and boundary conditions, which determine the initial state of the system and the state along its boundaries, are often unknown \citep{beven2001}. 
+
+%% In future projections of climate models a comparison of an ensemble of models has become standard procedure \citep{beven}.
+
+%% The problem is compounded by the fact that the source code of many hydrological models is not available, making it difficult to understand decisions made by different modelers... \\
+
+%% This has partly arisen because hydrological models are developed in isolation and lack a common interface [...] efforts such as the Framework for Understanding Structural Errors (FUSE) \citep{clark2008}.
+
+%% In many cases the initial and boundary conditions and parameters are considered as random variables rather than fixed, known quantities and a collection of feasible values, perhaps with varying likelihoods, is generated to capture the range of uncertainty present \citep{}. 
+
+%% In distributed, physics-based hydrological modelling, much uncertainty arises from sub-grid parameterisations that are used to represent processes that occur at finer scales than the model grid as well as processes that we do not fully understand \citep{beven2002}. 
+
+%% These ideas are not new: one of the aims of the prediction in ungauged basins was to... Yet, despite some progress, there is a lack...
+
+%% The problem is compounded by the fact that the source code of many hydrological models is not available, making it difficult to understand decisions made by different modelers... \\
+
+%% This has partly arisen because hydrological models are developed in isolation and lack a common interface [...] efforts such as the Framework for Understanding Structural Errors (FUSE) \citep{clark2008}.
+
+%% Models such as... 
+
+%% %% Paragraph ?: establish why it is necessary to couple models
+%% Earth system models (also integrated environmental models) are coupled models that simulate interactions between several [...] \citep{valcke2012,laniak2013,nazemi2015} \citep{armstrong2008,laniak2013,whelan2014,nazemi2015} Attempts to couple separate components to create a systems model [...] \citep{jagers2010} [...] This is particularly the case when human-environment interactions are modelled \citep{} [...] The need to couple models arises frequently in hydrology. In some cases this is because the model does not include some [...] For example, most land surface parameterisations do not explicitly model groundwater [...] Conceptually, we know that groundwater may influence the near surface soil moisture [...] \citep{miller2005}. In other situations we may wish to improve processes that are not adequately represented [...] For example, land surface parameterisations do not usually include specific crop classes, so to model [...] it is necessary to incorporate a crop model \citep[e.g.][]{tsarouchi2014}. To model human-environment interactions [...] For example, [...] \\ 
+
+%% %% Paragraph ?: describe current modelling frameworks  
+%% The need for couplers was first addressed by the climate modelling community to couple [...] Current modelling frameworks (OpenMI, ...) Component-based frameworks consist of model components that follow a standard component interface to ensure that different components within the same framework interact correctly \citep{valcke2012}. The Earth System Modelling Framework \citep{hill2004} is a component-based modelling framework developed to build complex earth system models \citep{}. It has been applied to [...] \citep[e.g.][]{keller2014} ESMF provides generic component interfaces [...] These frameworks are designed to be run on supercomputers and, as such, [...] steep learning curve [...] There are limited applications of these couplers to hydrology [...] ...\citet{shrestha2014} coupled the Community Land Model, ParFlow and COSMO using the OASIS3 coupler [...] \\
+
+%% The Open Modelling System \citep{}... OpenMI supports temporal and spatial disaggregation to ensure model components operating at different temporal and spatial resolutions [...] \citep{blind2005} OpenMI was originally designed to operate on Windows [...] support for other platforms is variable: it has been ported to Linux, although, according to the project website, it is only tested on one Linux distribution (OpenSUSE 11.0, 64-bit) while Mac-users (?) To port OpenMI to Linux the Mono compiler [...] "Mono compiler does not support parallel computing" Furthermore, it is unclear whether the development cycle for the Linux version follows that of the main Windows version. [...] For an existing model to be OpenMI-compliant it is necessary to represent the model as a C# class implementing a set of operations defined by the OpenMI standard \citep{}. This is relatively straightforward if the original model is written in a supported language (.NET, C#) \citep{}. Bearing in mind that the typical OpenMI users are scientists, not programmers, this can be non-trivial \citep{bulatewicz2012,lu2012}. \\
+
+%% The main disadvantage with model couplers is that they require substantial modification of the original source code to be compliant \citep{}. This is unssatisfactory, because, assuming the efforts to make the model compliant is not carried out by the core developers, it removes the model from the development cycle. For this reason, "...there is a desire to leave component models unchanged..." assuming that the development of the model is seperate from efforts to [...] OpenMI, this means [...] \citep{armstrong2008} (also \citep{gregerson2007} This was the main reason for the development of the Bespoke Framework Generator, [...] uses XML metadata to create a model framework (the "run-time infrastructure that calls component models and allows them to communicate" \citep{armstrong2008}). \\
+
+%% Coupling models by transferring model input/output is an example of loose model coupling \citep{kamp2007}. While this approach has performance disadvantages... \\
+
+ %% Advances in technology... [link together distributed database and processors] Coupling existing models [...] allowing the development of individual models to continue independently [...] In addition, it encourages parsimony because only model compoenents relevant to particular scientific questions need to be included in the framework \citep{lenton2007} For example, [...] A review of existing model coupling tools is provided by \citet{jagers2010} [...] In hydrology, there have been numerous attempts to develop model coupling framework [...] \\ 
+
+%% The main purpose of land surface models is to provide the lower boundary condition to global and regional climate models \citep{best2011} The application of these models to hydrological problems [...] The earth system model components is non-trivial and requires [...] \citep{turuncoglu2011} Furthermore, running such models over all but the smallest study areas on personal computers is time consuming. This fact has important consequences for the reproducibility of scientific results [...] Not all researchers have the ability and resources to install [...] 
+
+%% For example, \citet{gober2015} draws attention to the shortcomings of using the concept of social memory used by \citet{dibaldassarre2015} to simulate interactions between flood risk and society...
+%% Coupling models rather than developing monolithic models is also valuable in order to prevent obfuscating system signals... \citep{bohensky2014}
+%% As in traditional hydrological modelling, it is important to get the right results for the right reasons in order to gain insight into the human-water system \citep{troy2015-a}.
+
+
+%% Managing this complexity and bringing together models and data to understand coupled human-water systems requires specialist tools... 
+
+%% As an emerging area of research there are many opportunities for future research activities. For example, \citet{troy2015} highlights the way in which behavioural responses... Models as multiple working hypotheses would benefit from a common interface \citep{}. Furthermore, socio-hydrology is subject to high levels of uncertainty... \citep{dibaldassarre2015,blair2016}. Under these circumstances it is beneficial to implement models as coupled-component models so that the uncertainty can be effectively communicated... \citep{clark2011,clark2015-a,clark2015-b}. 
+
+%% tim foster?
+
+%% Model development in socio-hydrology is data-intensive, requiring both quantitative data and qualititative data to understand the behaviour of social systems in relation to water use \citep{kelly2013}. \\
+
+%% Integrated environmental modelling is a systems approach where various models and data are combined to address specific questions related to environmental management and assessment \citep{bastin2012,laniak2013}. It brings together the knowledge and expertise of various scientific communities and, in doing so, increases the collective knowledge of the system \citep{laniak2013}.
+
+%% In a loose-coupling approach model components must adopt a standard interface but the internal model structure is left untouched \citep{goodall2011}. 
+
+%% For developers of model components this provides greater freedom to implement model equations in the most efficient way possible, while developers of the model at the systems level have greater flexibility about the types of model that can be coupled \citep{goodall2011}.
+
+ %% \citet{salas2012} defines this type of model coupling as an example of business integration in which system components... \citet{salas2012} developed... \\
+
+%% Applications of OpenMI... For example, \citet{jackson} developed a coupled model to represent feedbacks between... %%
+%% These frameworks are designed for the earth system modelling community and optimised for High Performance Computing \citep{goodall2011}. 
+%% Bearing in mind that prototypical OpenMI users are scientists and engineers, rather than professional programmers, this can be non-trivial \citep{bulatewicz2012,lu2012}. 
+
+%% Existing component-based frameworks result in tight-coupling applications... A tight-coupling approach involves combining the code of the original models to create a single modelling application \citep{goodall2011}. 
+
+%% Existing frameworks for model coupling impose constraints on modellers such as requiring knowledge of a particular programming language, depending on a certain platform (e.g. Windows, Unix (Linux)). 
+
+%% The concept supports the notion of 'Models of Everywhere' foreseen by \citet{beven2007}.
+
+%% OpenMI supports temporal and spatial disaggregation to ensure model components operating at different temporal and spatial resolutions \citep{blind2005}. 
+%% \citet{salas2015} details three main approaches to hydrological model coupling, which they refer to as data integration, business integration and presentation integration. With data integration system components use a shared data repository. All components can write data to, and retrieve data from, the repository. In a business integration approach
+%% Loose and tight model coupling \citep{kelly2013}
+%% There are considerable technical challenges associated with coupling legacy models which were not necessarily designed... \citep{kelly2013}. \\
+
+%% In this context several model coupling frameworks have been developed, including the Earth Systems Modeling Framework... Component-based frameworks consist of model components that follow a standard component interface to ensure that different components within the same framework interact correctly \citep{valcke2012}. The Earth System Modelling Framework \citep{hill2004} is a component-based modelling framework developed to build complex earth system models \citep{}. It has been applied to [...] \citep[e.g.][]{keller2014} ESMF provides generic component interfaces [...] These frameworks are designed to be run on supercomputers and, as such, [...] steep learning curve [...]
+%% These frameworks are designed to optimise model performance and run on supercomputers 
+
+%% The need for couplers was first addressed by the climate modelling community to couple separate components of earth system models. In this context several model coupling frameworks have been developed, including the Earth Systems Modeling Framework... These frameworks are designed to optimise model performance and run on supercomputers. In hydrology, the Open Modeling Interface (OpenMI) \citep{} was developed to... Current modelling frameworks (OpenMI, ...) Component-based frameworks consist of model components that follow a standard component interface to ensure that different components within the same framework interact correctly \citep{valcke2012}. The Earth System Modelling Framework \citep{hill2004} is a component-based modelling framework developed to build complex earth system models \citep{}. It has been applied to [...] \citep[e.g.][]{keller2014} ESMF provides generic component interfaces [...] These frameworks are designed to be run on supercomputers and, as such, [...] steep learning curve [...] There are limited applications of these couplers to hydrology [...] ...\citet{shrestha2014} coupled the Community Land Model, ParFlow and COSMO using the OASIS3 coupler [...] \\
+
+%% Furthermore it should be possible to provide these workflows as web services that form the basis of decision support systems. - web services in Discussion
+
+%% Socio-hydrology is the study of the ``dynamics and coevolution of coupled human-water systems" \citep{sivapalan2012}. Integrated environmental modelling is... \\
+
+%% Earth system models (also integrated environmental models) are coupled models that simulate interactions between several [...] \citep{valcke2012,laniak2013,nazemi2015} \citep{armstrong2008,laniak2013,whelan2014,nazemi2015} Attempts to couple separate components to create a systems model [...] \citep{jagers2010} [...] This is particularly the case when human-environment interactions are modelled \citep{} [...] The need to couple models arises frequently in hydrology. In some cases this is because the model does not include some [...] For example, most land surface parameterisations do not explicitly model groundwater [...] Conceptually, we know that groundwater may influence the near surface soil moisture [...] \citep{miller2005}. In other situations we may wish to improve processes that are not adequately represented [...] For example, land surface parameterisations do not usually include specific crop classes, so to model [...] it is necessary to incorporate a crop model \citep[e.g.][]{tsarouchi2014}. To model human-environment interactions [...] For example, [...] \\ 
+
+%% Paragraph ?: describe current modelling frameworks  
+
+%% OpenMI, this means [...] \citep{armstrong2008} (also \citep{gregerson2007}
+
+%% The main disadvantage with model couplers is that they require substantial modification of the original source code to be compliant \citep{}. This is unsatisfactory, because, assuming the efforts to make the model compliant is not carried out by the core developers, it removes the model from the development cycle. For this reason, ``...there is a desire to leave component models unchanged..." assuming that the development of the model is seperate from efforts to [...] 
+%% OpenMI, this means [...] \citep{armstrong2008} (also \citep{gregerson2007} %% This was the main reason for the development of the Bespoke Framework Generator, [...] uses XML metadata to create a model framework (the "run-time infrastructure that calls component models and allows them to communicate" \citep{armstrong2008}). \\
